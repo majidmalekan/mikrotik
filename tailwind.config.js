@@ -6,7 +6,11 @@ export default {
       './resources/**/*.vue',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'IRANSans': ['IRANSans'], // Add your custom font here
+      },
+    },
   },
   plugins: [],
 }

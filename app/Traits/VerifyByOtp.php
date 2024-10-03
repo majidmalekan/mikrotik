@@ -5,7 +5,7 @@ namespace App\Traits;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Modules\Auth\Http\Requests\OtpVerify\VerifyOtpRequest;
+use App\Http\Requests\Otp\VerifyOtpRequest;
 
 trait VerifyByOtp
 {
@@ -18,20 +18,17 @@ trait VerifyByOtp
      * @return string
      * @throws Exception
      */
-    public function deleteAndGenerateOtp(int|string $phone, string $keyForCache = ''): string
+    public function deleteAndGenerateOtp(int|string $phone): string
     {
         try {
-            $cacheKey = ($keyForCache != '' ? $phone . $keyForCache : $phone);
-//            $otp = generate_otp(env('OTP_LENGTH'));
-            $otp = 1111;
-            if (Cache::has($cacheKey))
-                Cache::pull($cacheKey);
-            Cache::put($cacheKey, $otp, env('OTP_EXPIRES_IN'));
+            $otp = generate_otp(env('OTP_LENGTH'));
+            if (Cache::has($phone))
+                Cache::pull($phone);
+            Cache::put($phone, $otp, env('OTP_EXPIRES_IN'));
             return $otp;
         } catch (\Exception $exception) {
             throw new Exception($exception->getMessage(), 403);
         }
-
     }
 
     /**
@@ -40,9 +37,9 @@ trait VerifyByOtp
      * @param string $keyForCache
      * @throws Exception
      */
-    protected function sendOtpVerification(string $phone, string $companyName = null, $keyForCache = ''): void
+    protected function sendOtpVerification(string $phone): void
     {
-        $this->sendVerificationNotification($phone, $companyName, $keyForCache);
+        $this->sendVerificationNotification($phone);
     }
 
     /**
@@ -57,28 +54,14 @@ trait VerifyByOtp
         if ($this->otpVerify($request->post('phone'), $otp)) {
             try {
                 DB::beginTransaction();
-
-                if (filter_var($request->post('phone'), FILTER_VALIDATE_EMAIL)) {
-                    $user = $this->service->firstOrCreate(['email' => $request->post('phone')]);
-                    $user->markContactAsVerified($request->post('phone'));
-                } else {
-                    $user = $this->service->firstOrCreate(['phone' => strval((int)$request->post('phone'))]);
-                    $user->markContactAsVerified();
-                }
-                if ($request->has('device_id')) {
-                    $deviceLimit = $this->checkDeviceLimit($user->id);
-                    if (!$deviceLimit) $this->storeDeviceAfterRegistration($request, $user);
-                }
-                $wallet = $this->createWalletForNewUser($user);
+                $user = $this->service->firstOrCreate(['phone' => strval((int)$request->post('phone'))]);
+                $user->markContactAsVerified();
                 $newToken = $this->createANewToken($request->post('phone'), $user);
                 DB::commit();
                 return [
                     "access_token" => $newToken,
                     "token_type" => env('JWT_TYPE'),
                     "expire_in" => env('JWT_TTL'),
-                    'has_verified' => $user->has_verified,
-                    'wallet' => $wallet,
-                    'device' => $deviceLimit,
                 ];
             } catch (Exception $exception) {
                 DB::rollBack();

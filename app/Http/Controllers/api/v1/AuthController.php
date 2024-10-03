@@ -5,16 +5,16 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Service\UserService;
 use App\Traits\SendMailTrait;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\MustVerifyContact;
 use App\Traits\VerifyByOtp;
+use Illuminate\Http\RedirectResponse;
 
 class AuthController extends Controller
 {
-    use Notifiable, SendMailTrait,VerifyByOtp, MustVerifyContact;
+    use Notifiable, SendMailTrait, VerifyByOtp, MustVerifyContact;
     /**
      * @var UserService
      */
@@ -33,25 +33,23 @@ class AuthController extends Controller
      */
     public function create()
     {
-        //
+        return view('Auth.login');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function login(Request $request): RedirectResponse
     {
         $phone = $request->post('phone');
         if (!Cache::has($phone)) {
-            $this->sendOtpVerification($phone);
-            $user = $this->service->firstByPhone($phone);
-            return success('', [
-                'otp_expires_in' => env('OTP_EXPIRES_IN'),
-                'otp_length' => env('OTP_LENGTH'),
-                'phone' => $request->post('phone'),
-                'has_verified' => $user == null ? false : $user->has_verified,
-            ]);
+            $otp = $this->sendOtpVerification($phone);
+            return redirect()
+                ->route('dashboard', ['otp' => $otp])
+                ->with('success', 'کد اعتبارسنجی با موفقیت اضافه شد.');
         }
-        return failed(__('auth.auth_sms_resend'), 403);
+        return back()->withErrors([
+            'phone' => 'شماره موبایل وارد شده معتبر نمی باشد',
+        ]);
     }
 }

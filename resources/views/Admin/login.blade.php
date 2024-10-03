@@ -10,23 +10,29 @@
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen font-IRANSans ">
     <div class="w-full max-w-md">
-        @if ($errors->has('phone'))
+        @if ($errors->has('loginError'))
         <div class="alert alert-danger">
-            {{ $errors->first('phone') }}
+            {{ $errors->first('loginError') }}
         </div>
         @endif
         <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
             id="md-form"
             autocomplete="off"
             method="post"
-            action="{{asset(route('login'))}}">
+            action="{{asset(route('login-admin'))}}">
             <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">ورود</h2>
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                    شماره تماس
+                    نام کاربری
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="phone" name="phone" type="text" placeholder="شماره تماس خود را وارد کنید">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" name="username" type="text" placeholder="نام کاربری خود را وارد کنید">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                    گذرواژه
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" name="password" type="text" placeholder="'گذرواژه خود را وارد کنید">
             </div>
             <div class="flex items-center justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">

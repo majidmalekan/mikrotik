@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@font-face {
+    font-family: 'IRANSans';
+    src: url('/fonts/woff2/IRANSansXFaNum-Regular.woff2') format('woff2'),
+         url('/fonts/woff/IRANSansXFaNum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'IRANSansBold';
+    src: url('/fonts/woff2/IRANSansXFaNum-Bold.woff2') format('woff2'),
+         url('/fonts/woff/IRANSansXFaNum-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+  }
