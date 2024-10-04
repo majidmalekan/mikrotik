@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Otp\VerifyOtpRequest;
@@ -33,13 +34,12 @@ trait VerifyByOtp
 
     /**
      * @param string $phone
-     * @param string|null $companyName
-     * @param string $keyForCache
+     * @return int
      * @throws Exception
      */
-    protected function sendOtpVerification(string $phone): void
+    protected function sendOtpVerification(string $phone): int
     {
-        $this->sendVerificationNotification($phone);
+        return $this->sendVerificationNotification($phone);
     }
 
     /**
@@ -50,24 +50,19 @@ trait VerifyByOtp
     {
 
         $otp = $request->post('otp');
-        $deviceLimit = false;
         if ($this->otpVerify($request->post('phone'), $otp)) {
             try {
                 DB::beginTransaction();
                 $user = $this->service->firstOrCreate(['phone' => strval((int)$request->post('phone'))]);
                 $user->markContactAsVerified();
-                $newToken = $this->createANewToken($request->post('phone'), $user);
+                Auth::login($user);
                 DB::commit();
-                return [
-                    "access_token" => $newToken,
-                    "token_type" => env('JWT_TYPE'),
-                    "expire_in" => env('JWT_TTL'),
-                ];
+                return true;
             } catch (Exception $exception) {
                 DB::rollBack();
                 throw new Exception($exception->getMessage(), 403);
             }
         }
-        throw new Exception(__("auth.auth_failed"), 403);
+        return false;
     }
 }

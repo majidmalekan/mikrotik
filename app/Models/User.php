@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\MustVerifyContact;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-class User extends Authenticatable
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+class User extends BaseModel implements AuthorizableContract,AuthenticatableContract
 {
-    use HasFactory, Notifiable;
-
+    use HasFactory, Notifiable, Authorizable, Authenticatable, MustVerifyContact;
     /**
      * The attributes that are mass assignable.
      *
@@ -20,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'is_vip',
+        'is_admin'
     ];
 
     /**
@@ -30,6 +34,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'is_admin'
     ];
 
     /**
@@ -41,6 +46,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
+            'is_admin' => 'boolean',
+            'is_vip' => 'boolean',
             'password' => 'hashed',
         ];
     }

@@ -19,7 +19,8 @@
             id="md-form"
             autocomplete="off"
             method="post"
-            action="{{asset(route('login-admin'))}}">
+            action="{{route('login-admin')}}">
+            @csrf
             <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">ورود</h2>
 
             <div class="mb-4">

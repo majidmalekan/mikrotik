@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'create'])->name('login-form');
 Route::post('/login', [AuthController::class, 'store'])->name('login');
+Route::get('/otp-page', [AuthController::class, 'createOtp'])->name('otp-page');
+Route::post('/otp', [AuthController::class, 'otp'])->name('otp');
 Route::prefix('admin')->group(function () {
     Route::get('/', [AuthAdmin::class, 'create'])->name('login-form-admin');
     Route::post('/login', [AuthController::class, 'store'])->name('login-admin');

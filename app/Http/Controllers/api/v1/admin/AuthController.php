@@ -4,6 +4,9 @@ namespace App\Http\Controllers\api\v1\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\admin\auth\LoginAdminRequest;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use App\Service\UserService;
 use Exception;
@@ -26,7 +29,7 @@ class AuthController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View|Factory|Application
     {
         return view('Admin.Auth.login');
     }

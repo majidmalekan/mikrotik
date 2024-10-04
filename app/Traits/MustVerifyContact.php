@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use JetBrains\PhpStorm\Pure;
 
@@ -56,10 +57,8 @@ trait MustVerifyContact
 
     /**
      * @param int|string $userCredentials
-     * @param string|null $companyName
-     * @param string $keyForCache
-     * @return void
-     * @throws \Exception
+     * @return int
+     * @throws Exception
      */
     public function sendVerificationNotification(int|string $userCredentials): int
     {
