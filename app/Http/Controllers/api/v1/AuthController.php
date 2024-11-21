@@ -33,7 +33,7 @@ class AuthController extends Controller
 
     /**
      * @param UserService $user
-//     * @param MikrotikService $mikrotikService
+     * //     * @param MikrotikService $mikrotikService
      */
     public function __construct(UserService $user)
     {
@@ -59,7 +59,7 @@ class AuthController extends Controller
         if (!Cache::has($phone)) {
             $otp = $this->sendOtpVerification($phone);
             return redirect()
-                ->route('otp-page', ['otp' => $otp,"phone"=>$phone])
+                ->route('otp-page', ['otp' => $otp, "phone" => $phone])
                 ->with('success', 'کد اعتبارسنجی با موفقیت اضافه شد.');
         }
         return back()->withErrors([
@@ -81,13 +81,15 @@ class AuthController extends Controller
     public function otp(VerifyOtpRequest $request): RedirectResponse
     {
         try {
-            if ($this->verifyOtp($request)) {
+            $verifyOtp = $this->verifyOtp($request);
+            if ($verifyOtp["status"]) {
                 $inputs = $request->only(['phone']);
                 $inputs["username"] = $request->validated('phone');
                 $inputs["password"] = bcrypt($request->validated('phone'));
                 $inputs["phone_verified_at"] = Carbon::now();
+                $inputs["traffic_limit"] = config('constants.traffic_limit_default');
 //                $this->mikrotikService->addUser($request->validated('phone'), bcrypt($request->validated('phone')));
-                $user = $this->service->create($inputs);
+                $user = $this->service->updateAndFetch($verifyOtp["user"]->id, $inputs);
                 return redirect()->route('user-dashboard', ['id' => $user->id])->with('success', 'اینترنت شما وصل شد.');
             }
             return redirect()->route('otp-page')->withErrors(['otp' => 'کد موقت شما صحیح نمی باشد.']);
@@ -111,7 +113,7 @@ class AuthController extends Controller
                 'bytes_in' => 0,  // Downloaded bytes
                 'bytes_out' => 0, // Uploaded bytes
             ];
-            return view('Auth.dashboard', compact($traffic, $user));
+            return view('Auth.dashboard', compact('traffic', 'user'));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

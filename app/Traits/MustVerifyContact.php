@@ -69,7 +69,6 @@ trait MustVerifyContact
     /**
      * @param int|string $phone
      * @param int $otp
-     * @param string $keyForCache
      * @return bool
      */
     public function otpVerify(int|string $phone, int $otp): bool

@@ -31,10 +31,11 @@
         <!-- Input field -->
         <label>
             {{ ((($traffic['bytes_in'] + $traffic["bytes_out"])/1024)/1024) }}
+
         </label>
         <p>از</p>
         <label>
-            {{ $useer["traffic_limit"] }}
+            {{ $user["traffic_limit"] }} گیگابایت
         </label>
 
     </div>

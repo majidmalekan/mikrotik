@@ -15,7 +15,6 @@ trait VerifyByOtp
      * Generate new OTP (deletes previous ones)
      *
      * @param int|string $phone
-     * @param string $keyForCache
      * @return string
      * @throws Exception
      */
@@ -53,17 +52,17 @@ trait VerifyByOtp
         if ($this->otpVerify($request->post('phone'), $otp)) {
             try {
                 DB::beginTransaction();
-                $user = $this->service->firstOrCreate(['phone' => strval((int)$request->post('phone'))]);
+                $user = $this->service->firstOrCreate(['phone' => $request->post('phone')]);
                 $user->markContactAsVerified();
                 Auth::login($user);
                 DB::commit();
-                return true;
+                return ["status" => true, "user" => $user];
             } catch (Exception $exception) {
                 DB::rollBack();
                 throw new Exception($exception->getMessage(), 403);
             }
         }
-        return false;
+        return ["status" => false, "user" => null];
     }
 }
 //TODO: delete user mac address from mikrotik when logout
