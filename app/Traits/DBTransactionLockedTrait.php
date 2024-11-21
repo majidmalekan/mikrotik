@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use App\Exceptions\CommonException;
 use Exception as ExceptionAlias;
 use Illuminate\Support\Facades\DB;
 
@@ -10,11 +9,11 @@ trait DBTransactionLockedTrait
 {
     /**
      * @param ExceptionAlias $exception
-     * @throws CommonException
+     * @throws ExceptionAlias
      */
     public function rollbackError(ExceptionAlias $exception)
     {
         DB::rollBack();
-        throw new CommonException($exception->getMessage(), $exception->getCode());
+        throw new \Exception($exception->getMessage(), $exception->getCode());
     }
 }

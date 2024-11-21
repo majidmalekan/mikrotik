@@ -37,19 +37,19 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2 font-IRANSans " for="username">
                     نام کاربری
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" name="username" type="text" placeholder="نام کاربری خود را وارد کنید">
+                <input class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500" id="username" name="username" type="text" placeholder="نام کاربری خود را وارد کنید">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
                     گذرواژه
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" name="password" type="text" placeholder="گذرواژه خود را وارد کنید">
+                <input class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" name="password" type="text" placeholder="گذرواژه خود را وارد کنید">
             </div>
             <div class="flex items-center justify-between">
                 <button
-                    class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
+                    class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
                     type="submit">
-                    ورود
+                        ورود
                 </button>
             </div>
         </form>

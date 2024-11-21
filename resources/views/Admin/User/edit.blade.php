@@ -28,7 +28,7 @@
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="name">نام و نام خانوادگی</label>
             <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required>
         </div>
 
@@ -36,34 +36,35 @@
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="email">ایمیل</label>
             <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required>
         </div>
 
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">شماره تماس</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">شماره تماس</label>
             <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required>
         </div>
         <!-- Role Field -->
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="role">نقش</label>
             <input type="text" name="role" id="role" value="{{ old('role', $user->role) }}"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
                    required>
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="traffic_limit">میزان حجم مصرفی</label>
             <input type="text" name="traffic_limit" id="traffic_limit"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
                    value="{{ old('traffic_limit', $user->traffic_limit) }}" required>
         </div>
         <!-- Submit Button -->
         <div class="flex items-center justify-between">
-            <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                ویرایش
+            <button
+                class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
+                type="submit">
+                ویرایش کاربر
             </button>
         </div>
     </form>
