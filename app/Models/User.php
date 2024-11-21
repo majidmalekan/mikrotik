@@ -23,7 +23,9 @@ class User extends BaseModel implements AuthorizableContract,AuthenticatableCont
         'password',
         'phone',
         'is_vip',
-        'is_admin'
+        'is_admin',
+        "username",
+        "traffic_limit"
     ];
 
     /**

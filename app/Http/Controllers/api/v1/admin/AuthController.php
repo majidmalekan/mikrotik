@@ -43,7 +43,7 @@ class AuthController extends Controller
             $inputs = $request->only(['username', 'password']);
             $inputs["is_admin"] = true;
             if (Auth::attempt($inputs))
-                return redirect()->intended('dashboard');
+                return redirect()->intended('admin/dashboard');
         } catch (Exception $exception) {
             return redirect()->back()->withErrors(['loginError' => 'Invalid credentials']);
         }

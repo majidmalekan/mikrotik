@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\admin\auth;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginAdminRequest extends FormRequest
@@ -11,18 +12,19 @@ class LoginAdminRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array
      */
     public function rules(): array
     {
         return [
-            //
+            "username"=>['required','string','exists:users,username'],
+            "password"=>['required','string'],
         ];
     }
 }

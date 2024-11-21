@@ -22,7 +22,7 @@ trait VerifyByOtp
     public function deleteAndGenerateOtp(int|string $phone): string
     {
         try {
-            $otp = generate_otp(env('OTP_LENGTH'));
+            $otp = 1111;
             if (Cache::has($phone))
                 Cache::pull($phone);
             Cache::put($phone, $otp, env('OTP_EXPIRES_IN'));
@@ -66,3 +66,9 @@ trait VerifyByOtp
         return false;
     }
 }
+//TODO: delete user mac address from mikrotik when logout
+//TODO: user can logout
+//TODO: admin can add user with what preferences
+//TODO: after login see the user consumption and logout if it is unlimited is just usage not from anything
+//TODO: there is default value for usage of user that admin didnt add
+//TODO: admin can add limitation

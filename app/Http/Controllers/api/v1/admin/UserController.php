@@ -21,12 +21,14 @@ class UserController extends Controller
     {
         $this->service = $userService;
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): View|Factory|Application
     {
-        return view('Admin.User.index', compact($this->service->index($request)));
+        $users = $this->service->getAll();
+        return view('Admin.User.index', compact('users'));
     }
 
     /**
@@ -43,7 +45,10 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         try {
-            $inputs = $request->only(['phone', 'name', 'is_vip', 'email']);
+            $inputs = $request->only(['phone', 'name', 'email']);
+            $inputs["username"] = $request->validated('phone');
+            $inputs["password"] = bcrypt($request->validated('phone'));
+            //$this->mikrotikService->addUser($request->validated('phone'), bcrypt($request->validated('phone')));
             $users = $this->service->create($inputs);
             return redirect()
                 ->route('dashboard')
@@ -58,7 +63,8 @@ class UserController extends Controller
      */
     public function edit(string $id): View|Factory|Application
     {
-        return view('Admin.User.edit', compact($this->service->show($id)));
+        $user = $this->service->show($id);
+        return view('Admin.User.edit', compact('user'));
     }
 
     /**
@@ -66,9 +72,9 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id): RedirectResponse
     {
-        $inputs=$request->all();
-        $this->service->updateAndFetch($id,$inputs);
-        return redirect()->route('dashboard')->with('success','کاربر با موفقیت اضافه شد.');
+        $inputs = $request->all();
+        $this->service->updateAndFetch($id, $inputs);
+        return redirect()->route('dashboard')->with('success', 'کاربر با موفقیت ویرایش شد.');
     }
 
     /**
