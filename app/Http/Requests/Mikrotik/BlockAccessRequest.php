@@ -23,7 +23,7 @@ class BlockAccessRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required','string'],
+            'phone' => ['required','string','exists:users,phone'],
         ];
     }
 }

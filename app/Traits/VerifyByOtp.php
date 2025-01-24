@@ -5,6 +5,7 @@ namespace App\Traits;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Otp\VerifyOtpRequest;
 
@@ -21,7 +22,8 @@ trait VerifyByOtp
     public function deleteAndGenerateOtp(int|string $phone): string
     {
         try {
-            $otp = 1111;
+//            $otp = 1111;
+            $otp = generate_otp(env("OTP_LENGTH"));
             if (Cache::has($phone))
                 Cache::pull($phone);
             Cache::put($phone, $otp, env('OTP_EXPIRES_IN'));
@@ -33,12 +35,12 @@ trait VerifyByOtp
 
     /**
      * @param string $phone
-     * @return int
+     * @return void
      * @throws Exception
      */
-    protected function sendOtpVerification(string $phone): int
+    protected function sendOtpVerification(string $phone): void
     {
-        return $this->sendVerificationNotification($phone);
+        $this->sendVerificationNotification($phone);
     }
 
     /**
@@ -47,15 +49,13 @@ trait VerifyByOtp
      */
     protected function verifyOtp(VerifyOtpRequest $request): array|bool
     {
-
         $otp = $request->post('otp');
         if ($this->otpVerify($request->post('phone'), $otp)) {
             try {
-                DB::beginTransaction();
                 $user = $this->service->firstOrCreate(['phone' => $request->post('phone')]);
                 $user->markContactAsVerified();
-                Auth::login($user);
-                DB::commit();
+                Auth::attempt(["phone"=>$request->post('phone'),"password"=>$request->post('phone')], true);
+                Cookie::queue('remember_token', Auth::user()->getRememberToken(), 60 * 24 * 30, null, null, true, true); // 30 days
                 return ["status" => true, "user" => $user];
             } catch (Exception $exception) {
                 DB::rollBack();
@@ -65,9 +65,3 @@ trait VerifyByOtp
         return ["status" => false, "user" => null];
     }
 }
-//TODO: delete user mac address from mikrotik when logout
-//TODO: user can logout
-//TODO: admin can add user with what preferences
-//TODO: after login see the user consumption and logout if it is unlimited is just usage not from anything
-//TODO: there is default value for usage of user that admin didnt add
-//TODO: admin can add limitation

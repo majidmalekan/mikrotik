@@ -43,23 +43,21 @@ class BaseService
     /**
      * @param int $id
      * @param array $attributes
-     * @param array|null $whereAttributes
      * @return bool
      */
-    public function update(int $id, array $attributes,array $whereAttributes=null): bool
+    public function update(int $id, array $attributes): bool
     {
-        return $this->repository->update($id, $attributes,$whereAttributes);
+        return $this->repository->update($id, $attributes);
     }
 
     /**
      * @param int $id
      * @param array $attributes
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function updateAndFetch(int $id, array $attributes,array $whereAttributes=null): ?Model
+    public function updateAndFetch(int $id, array $attributes): ?Model
     {
-        if ($this->update($id, $attributes,$whereAttributes)) {
+        if ($this->update($id, $attributes)) {
             return $this->find($id);
         }
         return null;
@@ -85,12 +83,11 @@ class BaseService
 
     /**
      * @param int $id
-     * @param array|null $whereAttributes
      * @return bool
      */
-    public function delete(int $id,array $whereAttributes=null): bool
+    public function delete(int $id): bool
     {
-        return $this->repository->delete($id,$whereAttributes);
+        return $this->repository->delete($id);
     }
 
 
@@ -106,22 +103,20 @@ class BaseService
 
     /**
      * @param int $id
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function show(int $id,array $whereAttributes=null): ?Model
+    public function show(int $id): ?Model
     {
-        return $this->repository->show($id,$whereAttributes);
+        return $this->repository->show($id);
     }
 
     /**
      * @param string|int|null $queryParam
-     * @param array|null $whereAttributes
      * @return mixed
      */
-    public function getAll(string|int $queryParam = null,array $whereAttributes=null): mixed
+    public function getAll(string|int $queryParam = null): mixed
     {
-        return $this->repository->getAll($queryParam,$whereAttributes);
+        return $this->repository->getAll($queryParam);
     }
 
 

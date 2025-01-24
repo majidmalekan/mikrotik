@@ -40,10 +40,9 @@ class MikroTikController extends Controller
     public function addUser(AddUserRequest $request): JsonResponse
     {
         try {
+            $this->mikrotikService->addressList($request->ip(),$request->post('phone'));
             $response = $this->mikrotikService->addUser(
-                $request->input('username'),
-                $request->input('password'),
-                $request->input('profile') ?? 'default'
+                $request->post('phone')
             );
             return success('User added successfully', $response);
         } catch (\Exception $e) {
@@ -53,19 +52,13 @@ class MikroTikController extends Controller
 
 
     /**
-     * @param GetUserMacRequest $request
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getUserMAC(GetUserMacRequest $request): JsonResponse
+    public function getUserMAC(Request $request): JsonResponse
     {
         try {
-            if ($request->input('username')) {
-                $mac = $this->mikrotikService->getActiveUserMAC($request->input('username'));
-            } elseif ($request->input('ip_address')) {
-                $mac = $this->mikrotikService->getUserMACByIP($request->input('ip_address'));
-            } else {
-                throw new \Exception('Provide either a username or an IP address.');
-            }
+            $mac = $this->mikrotikService->getUserMACByIP($request->ip());
             return success('', ['mac_address' => $mac]);
         } catch (\Exception $e) {
             return failed($e->getMessage());
@@ -79,16 +72,7 @@ class MikroTikController extends Controller
     public function getTraffic(GetTrafficRequest $request): JsonResponse
     {
         try {
-            if ($request->input('username')) {
-                $traffic = $this->mikrotikService->getUserTraffic($request->input('username'));
-            } elseif ($request->input('queue_name')) {
-                $traffic = $this->mikrotikService->getQueueTraffic($request->input('queue_name'));
-            } elseif ($request->input('interface_name')) {
-                $traffic = $this->mikrotikService->getInterfaceTraffic($request->input('interface_name'));
-            } else {
-                throw new \Exception('Provide either a username, queue name, or interface name.');
-            }
-            return success('', ['traffic' => $traffic]);
+            return success('', $this->mikrotikService->getUserTraffic($request->input('phone')));
         } catch (\Exception $e) {
             return failed($e->getMessage());
         }
@@ -101,8 +85,8 @@ class MikroTikController extends Controller
     public function blockAccess(BlockAccessRequest $request): JsonResponse
     {
         try {
-            $result = $this->mikrotikService->blockUserAccess($request->input('username'));
-            return success('',$result);
+            $result = $this->mikrotikService->blockUserAccess($request->input('phone'));
+            return success('', $result);
         } catch (\Exception $e) {
             return failed($e->getMessage());
         }

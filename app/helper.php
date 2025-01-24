@@ -69,7 +69,6 @@ if (!function_exists('failed')) {
 }
 
 
-
 if (!function_exists('convertPersianDateToLatin')) {
     /**
      * @param string $date
@@ -79,6 +78,31 @@ if (!function_exists('convertPersianDateToLatin')) {
     {
         return CalendarUtils::createCarbonFromFormat('Y-m-d', $date)
             ->format('Y-m-d');
+    }
+}
+if (!function_exists('ipInRange')) {
+    /**
+     * @param string $ip
+     * @param string $range
+     * @return bool
+     */
+    function ipInRange(string $ip,string $range): bool
+    {
+        if (str_contains($range, '/')) {
+            list($subnet, $bits) = explode('/', $range);
+            $subnet = ip2long($subnet);
+            $mask = -1 << (32 - $bits);
+            $subnet &= $mask;
+            $ip = ip2long($ip);
+            return ($ip & $mask) === $subnet;
+        } elseif (str_contains($range, '-')) {
+            list($start, $end) = explode('-', $range);
+            $start = ip2long($start);
+            $end = ip2long($end);
+            $ip = ip2long($ip);
+            return ($ip >= $start && $ip <= $end);
+        }
+        return false;
     }
 }
 

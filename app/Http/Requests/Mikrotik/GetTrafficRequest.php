@@ -23,9 +23,7 @@ class GetTrafficRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => [new RequiredIf(!$this->has('queue_name')&&!$this->has('interface_name'))],
-            'queue_name' => [new RequiredIf(!$this->has('username')&&!$this->has('interface_name'))],
-            'interface_name' => [new RequiredIf(!$this->has('username')&&!$this->has('queue_name'))],
+            'phone' => ['required','string','exists:users,phone'],
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\admin\user;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -24,8 +25,9 @@ class UpdateUserRequest extends FormRequest
         return [
             'phone' => ['sometimes', 'string', 'max:11'],
             'name' => ['sometimes', 'string'],
-            'email' => ['sometimes', 'string', 'email'],
-//            'is_vip' => ['required', 'boolean'],
+            'email' => ['sometimes', 'string', 'email',Rule::unique('users','email')->ignore($this->route()->parameter('id'))],
+            "status"=>['sometimes','string',Rule::in('active','disable')],
+            'is_vip' => ['sometimes', 'boolean'],
         ];
     }
 }

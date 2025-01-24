@@ -7,10 +7,13 @@
     "require": {
         "php": "^8.2",
         "evilfreelancer/routeros-api-php": "^1.5",
+        "kalnoy/nestedset": "^6.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "morilog/jalali": "3.*"
+        "melipayamak/php": "1.0.0",
+        "morilog/jalali": "3.*",
+        "spatie/laravel-enum": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

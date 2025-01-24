@@ -3,10 +3,12 @@
 namespace App\Service;
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use RouterOS\Client;
 use RouterOS\Exceptions\ClientException;
 use RouterOS\Exceptions\ConfigException;
 use RouterOS\Exceptions\QueryException;
+use RouterOS\Query;
 
 class MikrotikService
 {
@@ -28,8 +30,7 @@ class MikrotikService
                 'pass' => $config['pass'],
                 'port' => $config['port'],
             ]);
-            var_dump($this->client);
-            die();
+
         } catch (ClientException $e) {
             throw new Exception('Failed to connect to MikroTik: ' . $e->getMessage());
         }
@@ -49,67 +50,25 @@ class MikrotikService
     }
 
     /**
-     * @param string $username
-     * @param string $password
-     * @param string $profile
+     * @param string $phone
+     * @param string $publicIpAddress
      * @return mixed
+     * @throws ConfigException
+     * @throws QueryException
      * @throws Exception
      */
-    public function addUser(string $username,string $password,string $profile = 'default'): mixed
+    public function addUser(string $phone, string $publicIpAddress = '213.233.177.228'): mixed
     {
         try {
-            return $this->client->query('/ip/hotspot/user/add', [
-                'name' => $username,
-                'password' => $password,
-                'profile' => $profile, // Optional: Specify a profile for the user
-            ])->read();
-        } catch (Exception $e) {
+            $query = new Query('/ip/firewall/nat/add');
+            $query->equal('action', "src-nat");
+            $query->equal('chain', 'srcnat');
+            $query->equal('dst-address-list', "!allowed allways");
+            $query->equal('src-address-list', $phone);
+            $query->equal('to-addresses', $publicIpAddress);
+            return $this->client->query($query)->read();
+        } catch (ClientException $e) {
             throw new Exception('Error adding user: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * @param string $username
-     * @param string $ipAddress
-     * @return mixed
-     * @throws Exception
-     */
-    public function bindIP(string $username,string $ipAddress): mixed
-    {
-        try {
-            return $this->client->query('/ip/hotspot/ip-binding/add', [
-                'mac-address' => '',
-                'type' => 'bypassed',
-                'address' => $ipAddress,
-                'comment' => $username,
-            ])->read();
-
-        } catch (Exception $e) {
-            throw new Exception('Error binding IP: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * @param $username
-     * @return mixed|null
-     * @throws Exception
-     */
-    public function getActiveUserMAC($username): mixed
-    {
-        try {
-            // Query the active Hotspot users
-            $response = $this->client->query('/ip/hotspot/active/print', [
-                '.proplist' => '.id,mac-address',
-                '?user' => $username,
-            ])->read();
-
-            if (!empty($response)) {
-                return $response[0]['mac-address'] ?? null;
-            }
-
-            throw new \Exception('User not found or not active.');
-        } catch (\Exception $e) {
-            throw new \Exception('Error fetching MAC address: ' . $e->getMessage());
         }
     }
 
@@ -121,16 +80,12 @@ class MikrotikService
     public function getUserMACByIP(string $ipAddress): mixed
     {
         try {
-            // Query the DHCP lease table for the IP address
-            $response = $this->client->query('/ip/dhcp-server/lease/print', [
-                '.proplist' => 'mac-address',
-                '?address' => $ipAddress,
-            ])->read();
-
+            $query = new Query('/ip/dhcp-server/lease/print');
+            $query->equal('address', $ipAddress);
+            $response = $this->client->query($query)->read();
             if (!empty($response)) {
                 return $response[0]['mac-address'] ?? null;
             }
-
             throw new \Exception('MAC address not found for this IP.');
         } catch (\Exception $e) {
             throw new \Exception('Error fetching MAC address: ' . $e->getMessage());
@@ -138,132 +93,103 @@ class MikrotikService
     }
 
     /**
-     * @param $username
-     * @return int[]
+     * @param string $phone
+     * @return array|null
      * @throws Exception
      */
-    public function getUserTraffic($username): array
+    public function getUserTraffic(string $phone): ?array
     {
         try {
-            // Query active Hotspot users for traffic data
-            $response = $this->client->query('/ip/hotspot/active/print', [
-                '.proplist' => 'bytes-in,bytes-out',
-                '?user' => $username,
-            ])->read();
-
+            $query = new Query('/ip/firewall/nat/print');
+            $query->where('src-address-list', $phone);
+            $response = $this->client->query($query)->read();
             if (!empty($response)) {
-                $data = $response[0];
-                return [
-                    'bytes_in' => $data['bytes-in'] ?? 0,  // Downloaded bytes
-                    'bytes_out' => $data['bytes-out'] ?? 0, // Uploaded bytes
-                ];
+                return $response[0];
             }
-
-            throw new \Exception('User not found or not active.');
+            return null;
+//            throw new \Exception('User not found or not active.');
         } catch (\Exception $e) {
             throw new \Exception('Error fetching traffic data: ' . $e->getMessage());
         }
     }
 
     /**
-     * @param $queueName
+     * @param string $status
+     * @param string $phone
      * @return array
      * @throws Exception
      */
-    public function getQueueTraffic($queueName): array
+    public function blockUserAccess(string $status, string $phone): array
     {
         try {
-            // Query queue for traffic data
-            $response = $this->client->query('/queue/simple/print', [
-                '.proplist' => 'bytes',
-                '?name' => $queueName,
-            ])->read();
-
-            if (!empty($response)) {
-                $data = explode(',', $response[0]['bytes']);
-                return [
-                    'bytes_in' => $data[0] ?? 0,  // Downloaded bytes
-                    'bytes_out' => $data[1] ?? 0, // Uploaded bytes
-                ];
-            }
-
-            throw new \Exception('Queue not found.');
+            $query = new Query("/ip/firewall/nat/$status");
+            $query->where('src-address-list', $phone);
+            return $this->client->query($query)->read();
         } catch (\Exception $e) {
-            throw new \Exception('Error fetching queue traffic: ' . $e->getMessage());
-        }
-    }
-
-
-    /**
-     * @param string $interfaceName
-     * @return array
-     * @throws Exception
-     */
-    public function getInterfaceTraffic(string $interfaceName): array
-    {
-        try {
-            // Monitor traffic on the interface
-            $response = $this->client->query('/interface/monitor-traffic', [
-                'interface' => $interfaceName,
-                'once' => true,
-            ])->read();
-
-            if (!empty($response)) {
-                return [
-                    'rx_bytes' => $response[0]['rx-byte'] ?? 0, // Received bytes
-                    'tx_bytes' => $response[0]['tx-byte'] ?? 0, // Transmitted bytes
-                ];
-            }
-
-            throw new \Exception('Interface not found.');
-        } catch (\Exception $e) {
-            throw new \Exception('Error fetching interface traffic: ' . $e->getMessage());
+            throw new \Exception('Error blocking user access: ' . $e->getMessage());
         }
     }
 
     /**
-     * @param string $username
+     * @param string $ip
+     * @param string $phone
      * @return mixed
      * @throws Exception
      */
-    public function findUserByName(string $username): mixed
+    public function addressList(string $ip, string $phone): mixed
     {
         try {
-            // Query Hotspot user list for the user ID
-            $response = $this->client->query('/ip/hotspot/user/print', [
-                '.proplist' => '.id',
-                '?name' => $username,
-            ])->read();
-
-            if (!empty($response)) {
-                return $response[0]['.id'];
-            }
-
-            throw new \Exception('User not found.');
+            $query = new Query('/ip/firewall/address-list/add');
+            $query->equal('list', $phone);
+            $query->equal('address', $ip);
+            return $this->client->query($query)->read();
         } catch (\Exception $e) {
-            throw new \Exception('Error finding user by name: ' . $e->getMessage());
+            throw new \Exception('Error blocking user access: ' . $e->getMessage());
         }
     }
 
     /**
-     * @param string $username
-     * @return string
+     * @param string $ip
+     * @param string $phone
+     * @return bool
      * @throws Exception
      */
-    public function blockUserAccess(string $username): string
+    public function removeAddressList(string $ip, string $phone): bool
     {
+
         try {
-            // Find the user's ID
-            $userId = $this->findUserByName($username);
-
-            // Disable the user in the MikroTik Hotspot
-            $this->client->query('/ip/hotspot/user/disable', [
-                '.id' => $userId,
-            ])->read();
-
-            return 'User access blocked successfully.';
+            $query = new Query('/ip/firewall/address-list/print');
+            $query->where('list', $phone);
+            $query->where('address', $ip);
+            $response = $this->client->query($query)->read();
+            if (!empty($response)) {
+                $id = $response[0]['.id'];
+                $deleteQuery = new Query('/ip/firewall/address-list/remove');
+                $deleteQuery->where('.id', $id);
+                $this->client->query($deleteQuery)->read();
+                return true;
+            }
+            return false;
         } catch (\Exception $e) {
             throw new \Exception('Error blocking user access: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @return int[]
+     * @throws Exception
+     */
+    public function getData(): array
+    {
+        try {
+            $query = new Query('/ip/firewall/nat/print');
+            $response = $this->client->query($query)->read();
+            if (!empty($response)) {
+                return $response[0];
+            }
+            throw new \Exception('User not found or not active.');
+        } catch (\Exception $e) {
+            throw new \Exception('Error fetching traffic data: ' . $e->getMessage());
         }
     }
 

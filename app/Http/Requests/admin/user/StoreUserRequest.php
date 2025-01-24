@@ -4,6 +4,7 @@ namespace App\Http\Requests\admin\user;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\RequiredIf;
 
 class StoreUserRequest extends FormRequest
 {
@@ -26,7 +27,8 @@ class StoreUserRequest extends FormRequest
             'phone' => ['required', 'string', 'max:11'],
             'name' => ['required', 'string'],
             'email' => ['required', 'string', 'email'],
-//            'is_vip' => ['required', 'boolean'],
+            'is_vip' => ['required', 'boolean'],
+            'traffic_limit'=>[new RequiredIf(!$this->input('is_vip')),]
         ];
     }
 }

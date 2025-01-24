@@ -12,7 +12,6 @@ interface BaseEloquentRepositoryInterface
 {
     /**
      * @param array $attributes
-     *
      * @return Model
      */
     public function create(array $attributes): Model;
@@ -20,10 +19,9 @@ interface BaseEloquentRepositoryInterface
     /**
      * @param int $modelId
      * @param array $attributes
-     * @param array|null $whereAttributes
      * @return bool
      */
-    public function update(int $modelId, array $attributes,array $whereAttributes=null): bool;
+    public function update(int $modelId, array $attributes): bool;
 
     /**
      * @param int $id
@@ -35,10 +33,9 @@ interface BaseEloquentRepositoryInterface
 
     /**
      * @param int $id
-     * @param array|null $whereAttributes
      * @return mixed
      */
-    public function delete(int $id,array $whereAttributes=null): mixed;
+    public function delete(int $id): mixed;
 
     /**
      * @param Request $request
@@ -50,31 +47,26 @@ interface BaseEloquentRepositoryInterface
     /**
      * @param int $id
      * @param array $attributes
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function updateAndFetch(int $id, array $attributes,array $whereAttributes=null): ?Model;
+    public function updateAndFetch(int $id, array $attributes): ?Model;
 
     /**
      * @param string|int|null $queryParam
-     * @param array|null $whereAttributes
      * @return array|Collection
      */
-    public function getAll(string|int $queryParam = null,array $whereAttributes=null): array|Collection;
+    public function getAll(string|int $queryParam = null): array|Collection;
 
     /**
      * @param string $attributeName
      * @param int $attributeId
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function findByForeignId(string $attributeName, int $attributeId,array $whereAttributes=null): ?Model;
+    public function findByForeignId(string $attributeName, int $attributeId): ?Model;
 
     /**
      * @param string $searchKey
      * @return mixed
      */
     public function search(string $searchKey): mixed;
-
-
 }

@@ -24,8 +24,7 @@ class GetUserMacRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => [new RequiredIf(!$this->has('ip_address')), 'string'],
-            'ip_address' => [new RequiredIf(!$this->has('username')), 'ip'],
+            'phone' => ['required','string','exists:users,phone'],
         ];
     }
 }

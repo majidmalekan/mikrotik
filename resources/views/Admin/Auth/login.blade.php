@@ -8,12 +8,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen font-IRANSans ">
-<div class="mb-6">
-    <img src="{{ asset('Image/logo.jpg') }}" alt="Logo" class="mx-auto w-20 h-20">
-    <h1 class="text-blue-800 font-bold text-xl mt-4">پارک علم و فناوری</h1>
+<body class="bg-white flex flex-col items-center min-h-screen font-IRANSans ">
+<div class="flex flex-col items-center">
+    <img src="{{ asset('Image/logo.jpg') }}" alt="Logo" class="mx-auto" style="height: 200px">
+    <h1 class="text-customBlue font-bold text-xl mt-5">منطقه نوآوری شریف</h1>
 </div>
-    <div class="w-full max-w-md">
+    <div class="max-w-md w-3/4 lg:w-full md:w-full">
         @if ($errors->any())
             <div class="fixed top-5 right-5 space-y-2">
                 @foreach ($errors->all() as $error)
@@ -25,33 +25,30 @@
                 @endforeach
             </div>
         @endif
-        <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        <form class="bg-white shadow-custom rounded px-8 pt-6 pb-8 mb-4 mt-5"
             id="md-form"
             autocomplete="off"
             method="post"
             action="{{ route('login-admin')}}">
             @csrf
-            <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">ورود به بخش مدیریت</h2>
-
+            <h2 class="text-2xl font-semibold mb-6 mt-2 text-gray-800 text-center">ورود</h2>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2 font-IRANSans " for="username">
+                <label class="block text-gray-500 text-sm font-bold mb-2 font-IRANSans " for="username">
                     نام کاربری
                 </label>
                 <input class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500" id="username" name="username" type="text" placeholder="نام کاربری خود را وارد کنید">
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                <label class="block text-gray-500 text-sm font-bold mb-2" for="password">
                     گذرواژه
                 </label>
-                <input class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" name="password" type="text" placeholder="گذرواژه خود را وارد کنید">
+                <input class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" name="password" type="password" placeholder="گذرواژه خود را وارد کنید">
             </div>
-            <div class="flex items-center justify-between">
                 <button
-                    class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
+                    class="bg-customBlue text-white p-6 py-2 rounded transition duration-200"
                     type="submit">
-                        ورود
+                    ورود به سیستم
                 </button>
-            </div>
         </form>
     </div>
 </body>

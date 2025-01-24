@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'melipayamak' => [
+        'username' => env('MELIPAYAMAK_USERNAME'),
+        'password' => env('MELIPAYAMAK_PASSWORD'),
+        'sender' => env('MELIPAYAMAK_SENDER'),
+    ],
 
 ];

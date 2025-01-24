@@ -23,9 +23,7 @@ class AddUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username'=>['required','string'],
-            'password'=>['required','string'],
-            'profile'=>['sometimes','string']
+            'phone' => ['required','string'],
         ];
     }
 }

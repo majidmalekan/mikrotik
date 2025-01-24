@@ -23,4 +23,44 @@ class UserService extends BaseService
     {
         return $this->repository->firstOrCreate($attributes);
     }
+
+    /**
+     * @param int $id
+     * @param array $attributes
+     * @param array|null $macAddressRelation
+     * @param array|null $ipAddressRelation
+     * @return mixed
+     */
+    public function updateAndFetchWithRelation(int $id, array $attributes, array $macAddressRelation = null,array $ipAddressRelation=null): mixed
+    {
+        return $this->repository->updateAndFetchWithRelation($id, $attributes, $macAddressRelation,$ipAddressRelation);
+    }
+
+    /**
+     * @param int $userId
+     * @param string $macAddress
+     * @return bool
+     */
+    public function isMacAddressExists(int $userId, string $macAddress): bool
+    {
+        return $this->repository->isMacAddressExists($userId, $macAddress);
+    }
+
+    /**
+     * @param int $userId
+     * @param string $ipAddress
+     * @return mixed
+     */
+    public function isIpAddressExists(int $userId, string $ipAddress): mixed
+    {
+        return $this->repository->isIpAddressExists($userId, $ipAddress);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllNormalUser(): mixed
+    {
+        return $this->repository->getAllNormalUser();
+    }
 }

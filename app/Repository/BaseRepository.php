@@ -2,20 +2,17 @@
 
 namespace App\Repository;
 
-use App\Traits\CacheRepositoryTrait;
 use App\Traits\DBTransactionLockedTrait;
 use App\Traits\TableInformationTrait;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class BaseRepository implements BaseEloquentRepositoryInterface
 {
-    use TableInformationTrait, CacheRepositoryTrait, DBTransactionLockedTrait;
+    use TableInformationTrait, DBTransactionLockedTrait;
 
     /**
      * @var Model
@@ -37,18 +34,12 @@ class BaseRepository implements BaseEloquentRepositoryInterface
     /**
      * @param int $id
      * @param array $attributes
-     * @param array|null $whereAttributes
      * @return bool
      */
-    public function update(int $id, array $attributes, array $whereAttributes = null): bool
+    public function update(int $id, array $attributes): bool
     {
-        $this->clearCache('index');
-        $this->clearCache('find', $id);
         return $this->model->query()
             ->where('id', $id)
-            ->when($whereAttributes != null, function ($query) use ($whereAttributes) {
-                $query->where($whereAttributes);
-            })
             ->update($attributes);
     }
 
@@ -59,11 +50,9 @@ class BaseRepository implements BaseEloquentRepositoryInterface
      */
     public function find(int $id): ?Model
     {
-        return Cache::remember($this->getTableName() . '_find_' . (auth('sanctum')->check() ? request()->user('sanctum')->id . $id : $id), env('CACHE_EXPIRE_TIME'), function () use ($id) {
             return $this->model
                 ->query()
                 ->findOrFail($id);
-        });
     }
 
 
@@ -73,7 +62,6 @@ class BaseRepository implements BaseEloquentRepositoryInterface
      */
     public function create(array $attributes): Model
     {
-        $this->clearCache('index');
         return $this->model
             ->query()
             ->create($attributes);
@@ -81,20 +69,13 @@ class BaseRepository implements BaseEloquentRepositoryInterface
 
     /**
      * @param int $id
-     * @param array|null $whereAttributes
      * @return mixed
-     * @throws BindingResolutionException
      */
-    public function delete(int $id, array $whereAttributes = null): mixed
+    public function delete(int $id): mixed
     {
-        $this->clearCache('find', $id);
-        $this->clearCache('index');
         return $this->model
             ->query()
             ->where('id', $id)
-            ->when($whereAttributes != null, function ($query) use ($whereAttributes) {
-                $query->where($whereAttributes);
-            })
             ->delete();
     }
 
@@ -106,9 +87,6 @@ class BaseRepository implements BaseEloquentRepositoryInterface
      */
     public function index(Request $request, int $perPage): LengthAwarePaginator
     {
-
-        return Cache::remember($this->getTableName() . '_index_', env('CACHE_EXPIRE_TIME'),
-            function () use ($request, $perPage) {
                 return $this->model->query()
                     ->when($request->user(), function ($query) use ($request) {
                         $query->when(!$request->user()->is_admin, function ($query) use ($request) {
@@ -120,74 +98,54 @@ class BaseRepository implements BaseEloquentRepositoryInterface
                     })
                     ->orderBy($request->get('sort', 'id'), $request->get('direction', 'DESC'))
                     ->paginate($perPage, '*', '', $request->get('page', 1));
-
-            });
     }
 
     /**
      * @param int $id
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function show(int $id, array $whereAttributes = null): ?Model
+    public function show(int $id): ?Model
     {
-        return Cache::remember($this->getTableName() . '_find_' . (auth('sanctum')->check() ? request()->user('sanctum')->id . $id : $id), env('CACHE_EXPIRE_TIME'), function () use ($id, $whereAttributes) {
             return $this->model
                 ->query()
                 ->where('id', $id)
-                ->when($whereAttributes != null, function ($query) use ($whereAttributes) {
-                    $query->where($whereAttributes);
-                })
                 ->firstOrFail();
-        });
-
     }
 
     /**
      * @param int $id
      * @param array $attributes
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function updateAndFetch(int $id, array $attributes, array $whereAttributes = null): ?Model
+    public function updateAndFetch(int $id, array $attributes): ?Model
     {
-        if ($this->update($id, $attributes, $whereAttributes)) {
+        if ($this->update($id, $attributes)) {
             return $this->find($id);
         }
         return null;
     }
 
-    public function getAll(string|int $queryParam = null, array $whereAttributes = null): array|Collection
+    public function getAll(string|int $queryParam = null): array|Collection
     {
-        return Cache::remember($this->getTableName() . '_getAll', env('CACHE_EXPIRE_TIME'), function () use ($queryParam, $whereAttributes) {
             return $this->model->query()
-                ->when(auth('sanctum')->check(), function ($query) {
-                    $query->when(!request()->user('sanctum')->is_admin, function ($query) {
-                        $query->where('user_id', request()->user('sanctum')->id);
+                ->when(auth()->check(), function ($query) {
+                    $query->when(!request()->user()->is_admin, function ($query) {
+                        $query->where('user_id', request()->user()->id);
                     });
                 })
-                ->when($whereAttributes != null, function ($query) use ($whereAttributes) {
-                    $query->where($whereAttributes);
-                })
                 ->get();
-        });
-
     }
 
     /**
      * @param string $attributeName
      * @param int $attributeId
-     * @param array|null $whereAttributes
      * @return Model|null
      */
-    public function findByForeignId(string $attributeName, int $attributeId, array $whereAttributes = null): ?Model
+    public function findByForeignId(string $attributeName, int $attributeId): ?Model
     {
         return $this->model
             ->query()
             ->where($attributeName . '_id', $attributeId)
-            ->when($whereAttributes != null, function ($query) use ($whereAttributes) {
-                $query->where($whereAttributes);
-            })
             ->first();
     }
 

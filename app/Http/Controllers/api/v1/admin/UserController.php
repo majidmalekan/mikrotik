@@ -5,21 +5,25 @@ namespace App\Http\Controllers\api\v1\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\admin\user\StoreUserRequest;
 use App\Http\Requests\admin\user\UpdateUserRequest;
+use App\Service\MikrotikService;
 use App\Service\UserService;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     protected UserService $service;
+    protected MikrotikService $mikrotikService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, MikrotikService $mikrotikService)
     {
         $this->service = $userService;
+        $this->mikrotikService = $mikrotikService;
     }
 
     /**
@@ -27,7 +31,7 @@ class UserController extends Controller
      */
     public function index(Request $request): View|Factory|Application
     {
-        $users = $this->service->getAll();
+        $users = $this->service->index($request);
         return view('Admin.User.index', compact('users'));
     }
 
@@ -45,11 +49,10 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         try {
-            $inputs = $request->only(['phone', 'name', 'email']);
+            $inputs = $request->only(['phone', 'name', 'email', 'is_vip', 'traffic_limit']);
             $inputs["username"] = $request->validated('phone');
             $inputs["password"] = bcrypt($request->validated('phone'));
-            //$this->mikrotikService->addUser($request->validated('phone'), bcrypt($request->validated('phone')));
-            $users = $this->service->create($inputs);
+            $this->service->create($inputs);
             return redirect()
                 ->route('dashboard')
                 ->with('success', 'کاربر با موفقیت اضافه شد.');
@@ -64,7 +67,7 @@ class UserController extends Controller
     public function edit(string $id): View|Factory|Application
     {
         $user = $this->service->show($id);
-        return view('Admin.User.edit', compact('user'));
+        return view('Admin.User.edit-faq', compact('user'));
     }
 
     /**
@@ -72,7 +75,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id): RedirectResponse
     {
-        $inputs = $request->all();
+        $inputs = $request->except(['_token']);
         $this->service->updateAndFetch($id, $inputs);
         return redirect()->route('dashboard')->with('success', 'کاربر با موفقیت ویرایش شد.');
     }
@@ -86,5 +89,24 @@ class UserController extends Controller
         return redirect()
             ->route('dashboard')
             ->with('success', 'کاربر موردنظر با موفقیت حذف شد.');
+    }
+
+    /**
+     * @param string $id
+     * @return RedirectResponse
+     * @throws Exception
+     */
+    public function block(string $id): RedirectResponse
+    {
+        try {
+            $user = $this->service->show($id);
+            $userUpdate = $this->service->updateAndFetch($id, ["status" => $user->status == "active" ? "disable" : "active"]);
+            $this->mikrotikService->blockUserAccess($userUpdate->status == "active" ? "enable" : "disable", $user->phone);
+            return redirect()
+                ->route('dashboard')
+                ->with('success', 'کاربر موردنظر با موفقیت حذف شد.');
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 }

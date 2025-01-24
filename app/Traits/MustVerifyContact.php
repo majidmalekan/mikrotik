@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Notifications\SendSmsNotification;
+use App\Repository\User\UserRepositoryInterface;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use JetBrains\PhpStorm\Pure;
@@ -57,13 +59,13 @@ trait MustVerifyContact
 
     /**
      * @param int|string $userCredentials
-     * @return int
+     * @return void
      * @throws Exception
      */
-    public function sendVerificationNotification(int|string $userCredentials): int
+    public function sendVerificationNotification(int|string $userCredentials): void
     {
-       return $this->deleteAndGenerateOtp($userCredentials);
-        // $this->notify(new VerifyPhone($userCredentials));
+//        $this->deleteAndGenerateOtp($userCredentials);
+         $this->notify(new SendSmsNotification(275055,$userCredentials));
     }
 
     /**
@@ -74,5 +76,10 @@ trait MustVerifyContact
     public function otpVerify(int|string $phone, int $otp): bool
     {
         return Cache::get($phone) == $otp;
+    }
+
+    public function getAdminPhoneNumber()
+    {
+       return app()->make(UserRepositoryInterface::class)->getAdminPhoneNumber();
     }
 }
