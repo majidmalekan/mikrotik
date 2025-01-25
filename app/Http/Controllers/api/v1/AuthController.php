@@ -145,7 +145,7 @@ class AuthController extends Controller
      * @return Application|Redirector|RedirectResponse
      * @throws Exception
      */
-    public function logout(Request $request)
+    public function logout(Request $request): Application|Redirector|RedirectResponse
     {
         try {
             if ($this->mikrotikService->removeAddressList($request->ip(), $request->user()->phone)) {
