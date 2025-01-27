@@ -93,36 +93,38 @@ class AuthController extends Controller
     public function otp(VerifyOtpRequest $request): RedirectResponse
     {
         try {
-        $verifyOtp = $this->verifyOtp($request);
-        $inputs = $request->only(['phone']);
-        if ($verifyOtp["status"]) {
-            if (!$verifyOtp["user"]->has_verified) {
-                $inputs["username"] = $request->validated('phone');
-                $inputs["password"] = bcrypt($request->validated('phone'));
-                $inputs["phone_verified_at"] = Carbon::now();
-                $inputs["traffic_limit"] = config('constants.traffic_limit_default');
-                $inputs["has_verified"] = true;
-            }
-            $macAddress = $this->mikrotikService->getUserMACByIP($request->ip());
-            $macAddressRelation = null;
-            $ipAddressRelation = null;
-            if ($macAddress != null) {
-                if ($this->service->isMacAddressExists($verifyOtp["user"]->id, $macAddress))
-                    $macAddressRelation["mac_address"] = $macAddress;
-            }
-            if ($this->service->isIpAddressExists($verifyOtp["user"]->id, $request->ip()))
-                $ipAddressRelation["ip_address"] = $macAddress;
-            $this->mikrotikService->addressList($request->ip(), $request->validated('phone'));
-            $this->mikrotikService->addUser($request->validated('phone'));
-            $this->service->updateAndFetchWithRelation($verifyOtp["user"]->id, $inputs, $macAddressRelation, $ipAddressRelation);
-            $this->notify(new SendSmsNotification(1, 9363634297));
+            $verifyOtp = $this->verifyOtp($request);
+            $inputs = $request->only(['phone']);
+            if ($verifyOtp["status"]) {
+                if (!$verifyOtp["user"]->has_verified) {
+                    $inputs["username"] = $request->validated('phone');
+                    $inputs["password"] = bcrypt($request->validated('phone'));
+                    $inputs["phone_verified_at"] = Carbon::now();
+                    $inputs["traffic_limit"] = config('constants.traffic_limit_default');
+                    $inputs["has_verified"] = true;
+                }
+                $macAddress = $this->mikrotikService->getUserMACByIP($request->ip());
+                $macAddressRelation = null;
+                $ipAddressRelation = null;
+                if ($macAddress != null) {
+                    if ($this->service->isMacAddressExists($verifyOtp["user"]->id, $macAddress))
+                        $macAddressRelation["mac_address"] = $macAddress;
+                }
+                if ($this->service->isIpAddressExists($verifyOtp["user"]->id, $request->ip()))
+                    $ipAddressRelation["ip_address"] = $macAddress;
+                $this->mikrotikService->addressList($request->ip(), $request->validated('phone'));
+                if ($this->mikrotikService->getUserTraffic($request->post('phone')) == null)
+                    $this->mikrotikService->addUser($request->validated('phone'));
+                $this->service->updateAndFetchWithRelation($verifyOtp["user"]->id, $inputs, $macAddressRelation, $ipAddressRelation);
+                $this->notify(new SendSmsNotification(1, 9363634297));
 
-            return redirect()->route('user-dashboard')
-                ->with('success', 'اینترنت شما وصل شد.');
-        }
-        return redirect()
-            ->route('otp-page')
-            ->withErrors(['otp' => 'کد موقت شما صحیح نمی باشد.']);
+                return redirect()
+                    ->route('user-dashboard')
+                    ->with('success', 'اینترنت شما وصل شد.');
+            }
+            return redirect()
+                ->route('otp-page')
+                ->withErrors(['otp' => 'کد موقت شما صحیح نمی باشد.']);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

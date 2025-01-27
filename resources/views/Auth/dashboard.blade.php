@@ -29,11 +29,11 @@
         <h2 class="text-gray-800 text-lg font-semibold">منطقه نوآوری شریف</h2>
         <p class="text-gray-500 mt-4">میزان حجم مصرفی شما</p>
         <p class="mt-10">
-            {{ $user['traffic'] }} گیگابایت
+            {{ $user['traffic'] }} مگابایت
         </p>
         <p class="mt-2">از</p>
         <p class="mt-2">
-            {{ !$user->is_vip? $user["traffic_limit"] . "گیگابایت" : "بی نهایت" }}
+            {{ !$user->is_vip? $user["traffic_limit"] . "مگابایت" : "بی نهایت" }}
         </p>
 
     </div>
