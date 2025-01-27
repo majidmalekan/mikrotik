@@ -8,13 +8,13 @@ use App\Http\Controllers\api\v1\admin\AuthController as AuthAdmin;
 use App\Http\Controllers\api\v1\admin\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthController::class, 'create'])->name('login-form');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/login', [AuthController::class, 'create'])->name('login');
+Route::post('/login-verify', [AuthController::class, 'login'])->name('login-verify');
 Route::get('/otp-page', [AuthController::class, 'createOtp'])->name('otp-page');
 Route::post('/otp', [AuthController::class, 'otp'])->name('otp');
 //Route::post('/create-admin', [AuthController::class, 'createAdmin'])->name('createAdmin');
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard/{id}', [AuthController::class, 'dashboard'])->name('user-dashboard');
+    Route::get('/', [AuthController::class, 'dashboard'])->name('user-dashboard');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::resource('ticket', ApiTicketController::class);
 });

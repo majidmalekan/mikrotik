@@ -59,6 +59,7 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): RedirectResponse
     {
+
 //        if (!ipInRange($request->ip(), "172.3.0.0.0/16"))
 //            return back()->withErrors([
 //                'ip' => 'آیپی شما در رنج مورد نظر وجود ندارد.',
@@ -68,7 +69,7 @@ class AuthController extends Controller
         if (!Cache::has($phone) && $user->status != "disable") {
             $this->sendOtpVerification($phone);
             if (is_null($user->password))
-                $this->service->updateAndFetch($user->id, ["password" => bcrypt($request->post('password'))]);
+                $this->service->updateAndFetch($user->id, ["password" => bcrypt($request->post('phone'))]);
             return redirect()
                 ->route('otp-page', ["phone" => $phone])
                 ->with('success', 'کد اعتبارسنجی با موفقیت اضافه شد.');
@@ -116,9 +117,12 @@ class AuthController extends Controller
             $this->service->updateAndFetchWithRelation($verifyOtp["user"]->id, $inputs, $macAddressRelation, $ipAddressRelation);
             $this->notify(new SendSmsNotification(1, 9363634297));
 
-            return redirect()->route('user-dashboard', ['id' => $verifyOtp["user"]->id])->with('success', 'اینترنت شما وصل شد.');
+            return redirect()->route('user-dashboard')
+                ->with('success', 'اینترنت شما وصل شد.');
         }
-        return redirect()->route('otp-page')->withErrors(['otp' => 'کد موقت شما صحیح نمی باشد.']);
+        return redirect()
+            ->route('otp-page')
+            ->withErrors(['otp' => 'کد موقت شما صحیح نمی باشد.']);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
@@ -126,14 +130,13 @@ class AuthController extends Controller
 
 
     /**
-     * @param int $id
      * @return View|Factory|Application
      * @throws Exception
      */
-    public function dashboard(int $id): View|Factory|Application
+    public function dashboard(): View|Factory|Application
     {
         try {
-            $user = $this->service->show($id);
+            $user = $this->service->show(Auth::id());
             return view('Auth.dashboard', compact('user'));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());

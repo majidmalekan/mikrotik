@@ -31,7 +31,7 @@
               class="mt-10"
               autocomplete="off"
               method="post"
-              action="{{ route('login') }}">
+              action="{{ route('login-verify') }}">
         @csrf
         <!-- Input field -->
             <label for="phone" class="flex text-gray-500">
