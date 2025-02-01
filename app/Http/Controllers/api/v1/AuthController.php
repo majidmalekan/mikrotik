@@ -162,8 +162,6 @@ class AuthController extends Controller
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
-
-
     }
 
     public function getData(): array

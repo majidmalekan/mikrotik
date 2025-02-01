@@ -33,7 +33,7 @@
         </p>
         <p class="mt-2">از</p>
         <p class="mt-2">
-            {{ !$user->is_vip? $user["traffic_limit"] . "مگابایت" : "بی نهایت" }}
+            {{ !$user->is_vip? $user["traffic_limit"] . "گیگابایت" : "بی نهایت" }}
         </p>
 
     </div>
