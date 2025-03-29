@@ -59,7 +59,6 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): RedirectResponse
     {
-
 //        if (!ipInRange($request->ip(), "172.3.0.0.0/16"))
 //            return back()->withErrors([
 //                'ip' => 'آیپی شما در رنج مورد نظر وجود ندارد.',
