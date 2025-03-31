@@ -12,11 +12,11 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Kalnoy\Nestedset\NodeTrait;
 
 class User extends BaseModel implements AuthorizableContract, AuthenticatableContract
 {
-    use HasFactory, Notifiable, Authorizable, Authenticatable, MustVerifyContact;
-
+    use HasFactory, Notifiable, Authorizable, Authenticatable, MustVerifyContact,NodeTrait;
     /**
      * The attributes that are mass assignable.
      *
@@ -43,7 +43,8 @@ class User extends BaseModel implements AuthorizableContract, AuthenticatableCon
     protected $hidden = [
         'password',
         'remember_token',
-        'is_admin'
+        "_lft",
+        "_rgt"
     ];
 
     protected $appends = ["traffic"];
@@ -90,7 +91,7 @@ class User extends BaseModel implements AuthorizableContract, AuthenticatableCon
             $traffic = app()
                 ->make(MikrotikService::class)
                 ->getUserTraffic($this->phone);
-            return $traffic != null ? round(($traffic['bytes'] / 1024)) : 0;
+            return $traffic != null ? round($traffic['bytes'] / 1024 / 1024, 2) : 0;
         } catch (ExceptionAlias $e) {
             throw new ExceptionAlias($e->getMessage());
         }
@@ -101,12 +102,19 @@ class User extends BaseModel implements AuthorizableContract, AuthenticatableCon
         return $this->remember_token;
     }
 
-    public function setRememberToken($value)
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setRememberToken($value): void
     {
         $this->remember_token = $value;
     }
 
-    public function getRememberTokenName()
+    /**
+     * @return string
+     */
+    public function getRememberTokenName(): string
     {
         return 'remember_token';
     }

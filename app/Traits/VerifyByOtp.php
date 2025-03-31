@@ -22,8 +22,8 @@ trait VerifyByOtp
     public function deleteAndGenerateOtp(int|string $phone): string
     {
         try {
-//            $otp = 1111;
-            $otp = generate_otp(env("OTP_LENGTH"));
+            $otp = 1111;
+//            $otp = generate_otp(env("OTP_LENGTH"));
             if (Cache::has($phone))
                 Cache::pull($phone);
             Cache::put($phone, $otp, env('OTP_EXPIRES_IN'));

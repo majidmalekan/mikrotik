@@ -64,8 +64,8 @@ trait MustVerifyContact
      */
     public function sendVerificationNotification(int|string $userCredentials): void
     {
-//        $this->deleteAndGenerateOtp($userCredentials);
-         $this->notify(new SendSmsNotification(275055,$userCredentials));
+        $this->deleteAndGenerateOtp($userCredentials);
+//         $this->notify(new SendSmsNotification(275055,$userCredentials));
     }
 
     /**

@@ -17,6 +17,9 @@
                 <a href="{{ route('create-faq') }}" class="block py-2 px-4 rounded hover:bg-gray-700">اضافه کردن سوالات متداول</a>
             </li>
             <li class="mb-4">
+                <a href="{{ route('network-logs.index') }}" class="block py-2 px-4 rounded hover:bg-gray-700">گزارشات اتصال و مصرف</a>
+            </li>
+            <li class="mb-4">
                 <a href="{{ route('index-ticket') }}" class="block py-2 px-4 rounded hover:bg-gray-700">پشتیبانی</a>
             </li>
         </ul>

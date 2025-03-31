@@ -13,6 +13,11 @@ class Ticket extends BaseModel
 {
     use NodeTrait,HasFactory;
 
+
+    protected $hidden=[
+        "_lft",
+        "_rgt"
+    ];
     protected $casts=[
         "priority" => PriorityTicketEnum::class,
         "status" => StatusTicketEnum::class,

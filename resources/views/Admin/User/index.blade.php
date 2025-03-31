@@ -43,7 +43,7 @@
                         <td class="py-3 px-6 text-center">{{ $user?->username!=null?$user?->username:"وارد نشده" }}</td>
                         <td class="py-3 px-6 text-center">{{ $user?->phone }}</td>
                         <td class="py-3 px-6 text-center">{{ $user->is_admin?"کاربر مدیر": ($user?->is_vip?"کاربر ویژه":"کاربر عادی") }}</td>
-                        <td class="py-3 px-6 text-center">{{  $user?->traffic." گیگابایت" }}</td>
+                        <td class="py-3 px-6 text-center">{{  $user?->traffic." مگابایت" }}</td>
                         <td class="py-3 px-6 text-center">{{ ($user->is_vip?"بی نهایت":$user?->traffic_limit." گیگابایت") }}</td>
                         <td class="py-3 px-6 text-center">
                             <a href="{{ route('edit-user', $user?->id) }}">

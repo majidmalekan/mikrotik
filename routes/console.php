@@ -10,3 +10,7 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('app:calculate-traffic-of-user')->everyFiveMinutes();
+Schedule::command('network:log')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();

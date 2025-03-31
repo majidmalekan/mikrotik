@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\v1\admin\FaqController;
+use App\Http\Controllers\api\v1\admin\NetworkLogController;
 use App\Http\Controllers\api\v1\admin\TicketController;
 use App\Http\Controllers\api\v1\TicketController as ApiTicketController;
 use App\Http\Controllers\api\v1\AuthController;
@@ -36,7 +37,8 @@ Route::prefix('admin')->group(function () {
         Route::post('update-faq/{id}', [FaqController::class, 'update'])->name('update-faq');
         Route::get('delete-faq/{id}', [FaqController::class, 'destroy'])->name('delete-faq');
         Route::get('edit-faq/{id}', [FaqController::class, 'edit'])->name('edit-faq');
-
+        Route::get('/network-logs/export', [NetworkLogController::class, 'exportCsv'])->name('network-logs.export-csv');
+        Route::resource('network-logs', NetworkLogController::class)->only(['index']);
         Route::get('index-ticket', [TicketController::class, 'index'])->name('index-ticket');
         Route::post('update-ticket/{id}', [TicketController::class, 'update'])->name('update-ticket');
         Route::get('edit-ticket/{id}', [TicketController::class, 'edit'])->name('edit-ticket');

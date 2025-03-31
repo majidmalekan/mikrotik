@@ -2,8 +2,9 @@
 
 namespace App\Service;
 
+use App\Repository\NetworkLog\NetworkLogRepositoryInterface;
 use Exception;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use RouterOS\Client;
 use RouterOS\Exceptions\ClientException;
 use RouterOS\Exceptions\ConfigException;
@@ -22,7 +23,6 @@ class MikrotikService
     public function __construct()
     {
         $config = config('routeros-api');
-
         try {
             $this->client = new Client([
                 'host' => $config['host'],
@@ -30,7 +30,6 @@ class MikrotikService
                 'pass' => $config['pass'],
                 'port' => $config['port'],
             ]);
-
         } catch (ClientException $e) {
             throw new Exception('Failed to connect to MikroTik: ' . $e->getMessage());
         }
@@ -57,7 +56,7 @@ class MikrotikService
      * @throws QueryException
      * @throws Exception
      */
-    public function addUser(string $phone, string $publicIpAddress = '213.233.177.228'): mixed
+    public function addNatRule(string $phone, string $publicIpAddress = '213.233.177.228'): mixed
     {
         try {
             $query = new Query('/ip/firewall/nat/add');
@@ -136,7 +135,7 @@ class MikrotikService
      * @return mixed
      * @throws Exception
      */
-    public function addressList(string $ip, string $phone): mixed
+    public function addAddressList(string $ip, string $phone): mixed
     {
         try {
             $query = new Query('/ip/firewall/address-list/add');
@@ -191,6 +190,86 @@ class MikrotikService
         } catch (\Exception $e) {
             throw new \Exception('Error fetching traffic data: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getNetworkLogUsage(): void
+    {
+        try {
+            $query = new Query('/ip/dhcp-server/lease/print');
+            $leases = $this->client->query($query)->read();
+            $queueQuery = new Query('/queue/simple/print');
+            $queues = $this->client->query($queueQuery)->read();
+            foreach ($leases as $lease) {
+                $mac = $lease['mac-address'] ?? null;
+                $ip = $lease['address'] ?? null;
+                // Match queue by IP address (if exists)
+                $matchedQueue = collect($queues)->firstWhere('target', $ip . '/32');
+                $rx = $matchedQueue['rx-byte'] ?? 0;
+                $tx = $matchedQueue['tx-byte'] ?? 0;
+
+                app()->make(NetworkLogRepositoryInterface::class)->create([
+                    'mac_address' => $mac,
+                    'ip_address' => $ip,
+                    'download_bytes' => $rx,
+                    'upload_bytes' => $tx,
+                    'logged_at' => Carbon::now(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception('Error fetching network log usage: ' . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * @param string $phone
+     * @param string $publicIpAddress
+     * @return bool
+     * @throws Exception
+     */
+    public  function removeNatRule(string $phone,string $publicIpAddress= '213.233.177.228'): bool
+  {
+        try {
+            $rules=$this->printNatRules($phone,$publicIpAddress);
+            if (!empty($rules)) {
+                foreach ($rules as $rule) {
+                    $id = $rule['.id'];
+                    $delete = new Query('/ip/firewall/nat/remove');
+                    $delete->equal('.id', $id);
+                    $this->client->query($delete)->read();
+                }
+                return true;
+            }
+            return false;
+        }catch (\Exception $e) {
+            throw new \Exception('Error fetching NAT rule: ' . $e->getMessage());
+        }
+
+    }
+
+    /**
+     * @param string $phone
+     * @param string $publicIpAddress
+     * @return mixed
+     * @throws Exception
+     */
+    public function printNatRules(string $phone, string $publicIpAddress= '213.233.177.228'): mixed
+    {
+        try {
+            $query = new Query('/ip/firewall/nat/print');
+            $query->equal('action', "src-nat");
+            $query->equal('chain', 'srcnat');
+            $query->equal('dst-address-list', "!allowed allways");
+            $query->equal('src-address-list', $phone);
+            $query->equal('to-addresses', $publicIpAddress);
+            return $this->client->query($query)->read();
+        }catch (\Exception $e) {
+            throw new \Exception('Error fetching NAT rules: ' . $e->getMessage());
+        }
+
     }
 
 

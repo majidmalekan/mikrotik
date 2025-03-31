@@ -6,6 +6,8 @@ use App\Repository\BaseEloquentRepositoryInterface;
 use App\Repository\BaseRepository;
 use App\Repository\Faq\FaqRepository;
 use App\Repository\Faq\FaqRepositoryInterface;
+use App\Repository\NetworkLog\NetworkLogRepository;
+use App\Repository\NetworkLog\NetworkLogRepositoryInterface;
 use App\Repository\Ticket\TicketRepository;
 use App\Repository\Ticket\TicketRepositoryInterface;
 use App\Repository\User\UserRepository;
@@ -23,6 +25,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(BaseEloquentRepositoryInterface::class, BaseRepository::class);
         $this->app->bind(FaqRepositoryInterface::class, FaqRepository::class);
         $this->app->bind(TicketRepositoryInterface::class, TicketRepository::class);
+        $this->app->bind(NetworkLogRepositoryInterface::class, NetworkLogRepository::class);
     }
 
     /**
