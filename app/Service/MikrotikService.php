@@ -155,7 +155,6 @@ class MikrotikService
      */
     public function removeAddressList(string $ip, string $phone): bool
     {
-
         try {
             $query = new Query('/ip/firewall/address-list/print');
             $query->where('list', $phone);
@@ -164,7 +163,7 @@ class MikrotikService
             if (!empty($response)) {
                 $id = $response[0]['.id'];
                 $deleteQuery = new Query('/ip/firewall/address-list/remove');
-                $deleteQuery->where('.id', $id);
+                $deleteQuery->equal('.id', $id);
                 $this->client->query($deleteQuery)->read();
                 return true;
             }

@@ -11,7 +11,7 @@
 <body class="bg-white flex flex-col items-center min-h-screen font-IRANSans ">
 <div class="flex flex-col items-center">
     <img src="{{ asset('Image/logo.jpg') }}" alt="Logo" class="mx-auto" style="height: 200px">
-    <h1 class="text-customBlue font-bold text-xl mt-5">منطقه نوآوری شریف</h1>
+    <h1 class="text-customBlue font-bold text-xl mt-5">ناحیه نوآوری شریف</h1>
 </div>
     <div class="max-w-md w-3/4 lg:w-full md:w-full">
         @if ($errors->any())
