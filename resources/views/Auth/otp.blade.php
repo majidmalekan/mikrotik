@@ -25,7 +25,7 @@
         <img src="{{ asset('Image/logo.jpg') }}" alt="Logo" class="mx-auto" style="height: 200px">
     </div>
     <div class="bg-white shadow-custom rounded-lg p-8 max-w-sm mx-auto mt-10 w-3/4 lg:w-full md:w-full">
-        <h2 class="text-gray-800 text-lg font-semibold">منطقه نوآوری شریف</h2>
+        <h2 class="text-gray-800 text-lg font-semibold">ناحیه نوآوری شریف</h2>
         <p class="text-gray-700 mt-4">برای دسترسی به اینترنت کد تایید خود را وارد کنید</p>
         <form id="md-form"
               class="mt-10"
@@ -37,6 +37,7 @@
                 کد تایید
             </label>
             <input type="text"
+                   pattern="\d+"
                    name="otp"
                    class="w-full p-3 border border-gray-300 rounded mb-4 text-right focus:outline-none focus:ring-2 focus:ring-blue-500">
             <label for="phone">

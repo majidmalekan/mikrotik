@@ -64,7 +64,7 @@ class AuthController extends Controller
         if (!Cache::has($phone) && $user->status != "disable") {
             $this->sendOtpVerification($phone);
             if (is_null($user->password))
-                $this->service->updateAndFetch($user->id, ["password" => bcrypt($request->post('password'))]);
+                $this->service->updateAndFetch($user->id, ["password" => bcrypt($request->post('phone'))]);
             return redirect()
                 ->route('otp-page', ["phone" => $phone])
                 ->with('success', 'کد اعتبارسنجی با موفقیت اضافه شد.');
@@ -122,7 +122,6 @@ class AuthController extends Controller
 
 
     /**
-     * @param int $id
      * @return View|Factory|Application
      * @throws Exception
      */
@@ -141,7 +140,7 @@ class AuthController extends Controller
      * @return Application|Redirector|RedirectResponse
      * @throws Exception
      */
-    public function logout(Request $request)
+    public function logout(Request $request): Application|Redirector|RedirectResponse
     {
         try {
             if ($this->mikrotikService->removeNatRule($request->ip(), $request->user()->phone) && $this->mikrotikService->removeAddressList($request->ip(), $request->user()->phone)) {
@@ -153,8 +152,6 @@ class AuthController extends Controller
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
-
-
     }
 
     public function getData(): array

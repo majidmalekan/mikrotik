@@ -15,7 +15,7 @@ return [
      */
 
     'host' => env('MIKROTIK_HOST', '213.233.177.228'), // Address of Mikrotik RouterOS
-    'user' => env('MIKROTIK_USER', 'T@peshn3t'),        // Username
+    'user' => env('MIKROTIK_USER', 'api'),        // Username
     'pass' => env('MIKROTIK_PASSWORD', 'SalamFront@1'),           // Password
     'port' => 8728,           // RouterOS API port number for access (if not set use default or default with SSL if SSL enabled)
 
