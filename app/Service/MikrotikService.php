@@ -197,28 +197,41 @@ class MikrotikService
     public function getNetworkLogUsage(): void
     {
         try {
-            $query = new Query('/ip/dhcp-server/lease/print');
-            $leases = $this->client->query($query)->read();
-            $queueQuery = new Query('/queue/simple/print');
-            $queues = $this->client->query($queueQuery)->read();
-            foreach ($leases as $lease) {
-                $mac = $lease['mac-address'] ?? null;
-                $ip = $lease['address'] ?? null;
-                // Match queue by IP address (if exists)
-                $matchedQueue = collect($queues)->firstWhere('target', $ip . '/32');
-                $rx = $matchedQueue['rx-byte'] ?? 0;
-                $tx = $matchedQueue['tx-byte'] ?? 0;
+            $sessionRepositoryInterface=app()->make(NetworkLogRepositoryInterface::class);
+            // Get DHCP leases
+            $dhcpQuery = new Query('/ip/dhcp-server/lease/print');
+            $leases = $this->client->query($dhcpQuery)->read();
+            $leasesByIp = collect($leases)->keyBy('address');
+            // Get NAT rules
+            $natQuery = new Query('/ip/firewall/nat/print');
+            $natRules = $this->client->query($natQuery)->read();
 
-                app()->make(NetworkLogRepositoryInterface::class)->create([
-                    'mac_address' => $mac,
-                    'ip_address' => $ip,
-                    'download_bytes' => $rx,
-                    'upload_bytes' => $tx,
-                    'logged_at' => Carbon::now(),
-                ]);
+            foreach ($natRules as $rule) {
+                $addressListName = $rule['src-address-list'] ?? null;
+                $bytes = $rule['bytes'] ?? '0/0';
+
+                if (!$addressListName) continue;
+
+                $listQuery = new Query('/ip/firewall/address-list/print');
+                $listQuery->equal('list', $addressListName);
+                $addressListEntries = $this->client->query($listQuery)->read();
+
+                [$rx, $tx] = explode('/', $bytes);
+
+                foreach ($addressListEntries as $entry) {
+                    $ip = $entry['address'] ?? null;
+                    $mac = $leasesByIp[$ip]['mac-address'] ?? null;
+                    if (!$mac) continue;
+
+                    $sessionRepositoryInterface->startOrUpdateSession($mac, $ip, (int) $rx, (int) $tx);
+                }
             }
+            // Close sessions that are no longer active
+            $activeMacs = collect($leases)->pluck('mac-address')->toArray();
+            $sessionRepositoryInterface->closeInactiveSessions($activeMacs);
+
         } catch (\Exception $e) {
-            throw new \Exception('Error fetching network log usage: ' . $e->getMessage());
+            throw new \Exception('Error tracking session data: ' . $e->getMessage());
         }
     }
 
