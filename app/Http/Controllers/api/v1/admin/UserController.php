@@ -67,11 +67,14 @@ class UserController extends Controller
     public function edit(string $id): View|Factory|Application
     {
         $user = $this->service->show($id);
-        return view('Admin.User.edit-faq', compact('user'));
+        return view('Admin.User.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
+     * @param UpdateUserRequest $request
+     * @param string $id
+     * @return RedirectResponse
      */
     public function update(UpdateUserRequest $request, string $id): RedirectResponse
     {
@@ -82,6 +85,8 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @param string $id
+     * @return RedirectResponse
      */
     public function destroy(string $id): RedirectResponse
     {

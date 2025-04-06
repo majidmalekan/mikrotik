@@ -5,6 +5,10 @@ namespace App\Http\Controllers\api\v1\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\admin\Ticket\UpdateTicketRequest;
 use App\Service\TicketService;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
@@ -13,6 +17,8 @@ class TicketController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @param Request $request
+     * @return Factory|View|Application|\Illuminate\View\View
      */
     public function index(Request $request)
     {
@@ -22,6 +28,8 @@ class TicketController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * @param string $id
+     * @return Factory|View|Application|\Illuminate\View\View
      */
     public function edit(string $id)
     {
@@ -31,6 +39,9 @@ class TicketController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * @param UpdateTicketRequest $request
+     * @param string $id
+     * @return RedirectResponse
      */
     public function update(UpdateTicketRequest $request, string $id)
     {

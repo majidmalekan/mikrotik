@@ -55,6 +55,8 @@ class AuthController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @param LoginRequest $request
+     * @return RedirectResponse
      * @throws Exception
      */
     public function login(LoginRequest $request): RedirectResponse
@@ -83,6 +85,8 @@ class AuthController extends Controller
     }
 
     /**
+     * @param VerifyOtpRequest $request
+     * @return RedirectResponse
      * @throws Exception
      */
     public function otp(VerifyOtpRequest $request): RedirectResponse
@@ -122,13 +126,14 @@ class AuthController extends Controller
 
 
     /**
+     * @param Request $request
      * @return View|Factory|Application
      * @throws Exception
      */
-    public function dashboard(int $id): View|Factory|Application
+    public function dashboard(Request $request): View|Factory|Application
     {
         try {
-            $user = $this->service->show($id);
+            $user = $this->service->show($request->user()->id);
             return view('Auth.dashboard', compact('user'));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
@@ -152,10 +157,5 @@ class AuthController extends Controller
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
-    }
-
-    public function getData(): array
-    {
-        return $this->mikrotikService->getData();
     }
 }

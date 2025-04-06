@@ -39,7 +39,6 @@ class MikroTikController extends Controller
      */
     public function addUser(AddUserRequest $request): JsonResponse
     {
-        dd(bcrypt('09381933579'));
         try {
             $this->mikrotikService->addressList($request->ip(),$request->post('phone'));
             $response = $this->mikrotikService->addUser(

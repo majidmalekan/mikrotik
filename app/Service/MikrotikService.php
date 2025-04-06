@@ -85,9 +85,9 @@ class MikrotikService
             if (!empty($response)) {
                 return $response[0]['mac-address'] ?? null;
             }
-            throw new \Exception('MAC address not found for this IP.');
-        } catch (\Exception $e) {
-            throw new \Exception('Error fetching MAC address: ' . $e->getMessage());
+            throw new Exception('MAC address not found for this IP.');
+        } catch (Exception $e) {
+            throw new Exception('Error fetching MAC address: ' . $e->getMessage());
         }
     }
 
@@ -106,9 +106,8 @@ class MikrotikService
                 return $response[0];
             }
             return null;
-//            throw new \Exception('User not found or not active.');
-        } catch (\Exception $e) {
-            throw new \Exception('Error fetching traffic data: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Error fetching traffic data: ' . $e->getMessage());
         }
     }
 
@@ -124,8 +123,8 @@ class MikrotikService
             $query = new Query("/ip/firewall/nat/$status");
             $query->where('src-address-list', $phone);
             return $this->client->query($query)->read();
-        } catch (\Exception $e) {
-            throw new \Exception('Error blocking user access: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Error blocking user access: ' . $e->getMessage());
         }
     }
 
@@ -142,8 +141,8 @@ class MikrotikService
             $query->equal('list', $phone);
             $query->equal('address', $ip);
             return $this->client->query($query)->read();
-        } catch (\Exception $e) {
-            throw new \Exception('Error blocking user access: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Error blocking user access: ' . $e->getMessage());
         }
     }
 
@@ -168,8 +167,8 @@ class MikrotikService
                 return true;
             }
             return false;
-        } catch (\Exception $e) {
-            throw new \Exception('Error blocking user access: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Error blocking user access: ' . $e->getMessage());
         }
     }
 
@@ -185,9 +184,9 @@ class MikrotikService
             if (!empty($response)) {
                 return $response[0];
             }
-            throw new \Exception('User not found or not active.');
-        } catch (\Exception $e) {
-            throw new \Exception('Error fetching traffic data: ' . $e->getMessage());
+            throw new Exception('User not found or not active.');
+        } catch (Exception $e) {
+            throw new Exception('Error fetching traffic data: ' . $e->getMessage());
         }
     }
 
@@ -204,11 +203,9 @@ class MikrotikService
             foreach ($leases as $lease) {
                 $mac = $lease['mac-address'] ?? null;
                 $ip = $lease['address'] ?? null;
-                // Match queue by IP address (if exists)
                 $matchedQueue = collect($queues)->firstWhere('target', $ip . '/32');
                 $rx = $matchedQueue['rx-byte'] ?? 0;
                 $tx = $matchedQueue['tx-byte'] ?? 0;
-
                 app()->make(NetworkLogRepositoryInterface::class)->create([
                     'mac_address' => $mac,
                     'ip_address' => $ip,
@@ -217,8 +214,8 @@ class MikrotikService
                     'logged_at' => Carbon::now(),
                 ]);
             }
-        } catch (\Exception $e) {
-            throw new \Exception('Error fetching network log usage: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Error fetching network log usage: ' . $e->getMessage());
         }
     }
 
@@ -243,10 +240,9 @@ class MikrotikService
                 return true;
             }
             return false;
-        }catch (\Exception $e) {
-            throw new \Exception('Error fetching NAT rule: ' . $e->getMessage());
+        }catch (Exception $e) {
+            throw new Exception('Error fetching NAT rule: ' . $e->getMessage());
         }
-
     }
 
     /**
@@ -265,11 +261,8 @@ class MikrotikService
             $query->equal('src-address-list', $phone);
             $query->equal('to-addresses', $publicIpAddress);
             return $this->client->query($query)->read();
-        }catch (\Exception $e) {
-            throw new \Exception('Error fetching NAT rules: ' . $e->getMessage());
+        }catch (Exception $e) {
+            throw new Exception('Error fetching NAT rules: ' . $e->getMessage());
         }
-
     }
-
-
 }
