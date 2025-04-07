@@ -95,6 +95,19 @@
                         </select>
                     </label>
                 </div>
+                <div class="w-1/2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="status">نقش کاربر
+                        <select
+                            name="role"
+                            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm md:w-1/2 lg:w-1/2"
+                            required>
+                            @foreach ( UserRoleEnum::toArray() as $role)
+                                <option
+                                    value="{{ $role["value"] }}" {{ $user->role == $role["value"] ? 'selected' : '' }}>{{ $role["label"] }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                </div>
             </div>
 
             <!-- Submit Button -->

@@ -49,9 +49,10 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         try {
-            $inputs = $request->only(['phone', 'name', 'email', 'is_vip', 'traffic_limit']);
+            $inputs = $request->only(['phone', 'name', 'email', 'is_vip', 'traffic_limit','role','status']);
             $inputs["username"] = $request->validated('phone');
             $inputs["password"] = bcrypt($request->validated('phone'));
+            $inputs["parent_id"] = $request->user()->id;
             $this->service->create($inputs);
             return redirect()
                 ->route('dashboard')

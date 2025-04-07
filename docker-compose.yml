@@ -67,10 +67,6 @@ services:
             timeout: 5s
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
-        environment:
-            PMA_HOST: mysql  # The name of your MySQL service defined in the docker-compose.yml
-            PMA_USER: root
-            PMA_PASSWORD: password  # Replace with the actual MySQL root password
         ports:
             - "8081:80"
         networks:

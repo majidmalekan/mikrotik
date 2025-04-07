@@ -28,10 +28,10 @@ final class PriorityTicketEnum extends Enum
     protected static function labels(): array
     {
         return [
-            'Emergency' => __('enums.priority_ticket.Emergency'),
-            'High' => __('enums.priority_ticket.High'),
-            'Middle' => __('enums.priority_ticket.Middle'),
-            'Low' => __('enums.priority_ticket.Low'),
+            'Emergency' => 'بحرانی',
+            'High' => 'بالا',
+            'Middle' => 'متوسط',
+            'Low' => 'پایین',
         ];
     }
 }

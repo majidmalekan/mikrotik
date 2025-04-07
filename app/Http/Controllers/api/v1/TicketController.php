@@ -9,6 +9,10 @@ use App\Http\Requests\Ticket\StoreTicketRequest;
 use App\Notifications\SendSmsNotification;
 use App\Service\TicketService;
 use App\Traits\MustVerifyContact;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,8 +25,10 @@ class TicketController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @param Request $request
+     * @return Factory|View|Application
      */
-    public function index(Request $request)
+    public function index(Request $request): Factory|View|Application
     {
         $tickets = $this->ticketService->getRootTickets($request);
         return view('Auth.Ticket.index', compact('tickets'));
@@ -31,7 +37,7 @@ class TicketController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View|Factory|Application
     {
         return view('Auth.Ticket.create');
     }
@@ -39,7 +45,7 @@ class TicketController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTicketRequest $request)
+    public function store(StoreTicketRequest $request): RedirectResponse
     {
         try {
             if ($request->has('parent_id')) {
@@ -68,8 +74,10 @@ class TicketController extends Controller
 
     /**
      * Display the specified resource.
+     * @param string $id
+     * @return Factory|View|Application
      */
-    public function show(string $id)
+    public function show(string $id): Factory|View|Application
     {
         $ticket = $this->ticketService->show($id);
         return view('Auth.Ticket.show', compact('ticket'));
@@ -77,8 +85,10 @@ class TicketController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * @param string $id
+     * @return View|Factory|Application
      */
-    public function edit(string $id)
+    public function edit(string $id): View|Factory|Application
     {
         $ticket = $this->ticketService->show($id);
         return view('Auth.Ticket.edit', compact('ticket'));
@@ -86,8 +96,11 @@ class TicketController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * @param UpdateTicketRequest $request
+     * @param string $id
+     * @return RedirectResponse
      */
-    public function update(UpdateTicketRequest $request, string $id)
+    public function update(UpdateTicketRequest $request, string $id): RedirectResponse
     {
         if ($request->input('status') == StatusTicketEnum::Closed()->value && $this->ticketService->find($id)?->parent_id == null)
             $inputs["status"] = StatusTicketEnum::Closed()->value;

@@ -2,15 +2,14 @@
 
 namespace App\Repository\User;
 
+use App\Enums\UserRoleEnum;
 use App\Models\User;
 use App\Repository\BaseRepository;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use MongoDB\Driver\Exception\CommandException;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -37,6 +36,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 ->when($request->has('search'), function ($query) use ($request) {
                     $query->where('phone', '=', $request->get('search'));
                 })
+                ->when($request->user()->role==UserRoleEnum::Supervisor()->value, function ($query) use ($request) {
+                    $query->where('parent_id', '=', $request->user()->id);
+                })
                 ->orderBy($request->get('sort', 'id'), $request->get('direction', 'DESC'))
                 ->paginate($perPage, ['*'], 'page', $request->get('page', 1));
     }
@@ -47,6 +49,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      * @param array|null $macAddressRelation
      * @param array|null $ipAddressRelation
      * @return Model|null
+     * @throws \Exception
      */
     public function updateAndFetchWithRelation(int $id, array $attributes, array $macAddressRelation = null, array $ipAddressRelation = null): ?Model
     {
@@ -60,7 +63,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             DB::commit();
             return $user;
         } catch (\Exception $exception) {
-            throw new CommandException($exception);
+            throw new \Exception($exception);
         }
     }
 
@@ -84,14 +87,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         return $this->model->query()
             ->where('is_vip', '=', 0)
-            ->where('is_admin', '=', 0)
+            ->where('role', '=', UserRoleEnum::User()->value)
             ->get();
     }
 
     public function getAdminPhoneNumber(): string|int
     {
         return $this->model->query()
-            ->where('is_admin', '=', 1)
+            ->where('role', '=', UserRoleEnum::Admin()->value)
             ->first()?->phone;
     }
 }

@@ -8,9 +8,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-white flex  justify-center min-h-screen font-IRANSans ">
-<div class="text-center">
+<body class="bg-white flex flex-col  justify-center min-h-screen font-IRANSans ">
+@include('Components.header') <!-- Include the sidebar -->
 
+<div class="flex-grow flex justify-center items-start mt-8 px-4">
+    <div class="text-center w-full max-w-sm">
     @if ($errors->any())
         <div class="fixed top-5 right-5 space-y-2">
             @foreach ( $errors->all() as $error)
@@ -25,10 +27,9 @@
     <div class="mt-5">
         <img src="{{ asset('Image/logo.jpg') }}" alt="Logo" class="mx-auto" style="height: 200px">
     </div>
-    <div class="bg-white shadow-custom rounded-lg p-8 max-w-sm mx-auto mt-10 w-3/4 lg:w-full md:w-full">
-        <h2 class="text-gray-800 text-lg font-semibold">ناحیه نوآوری شریف</h2>
-        <p class="text-gray-500 mt-4">میزان حجم مصرفی شما</p>
-        <p class="mt-10">
+    <div class="bg-white shadow-custom rounded-lg p-5 max-w-sm mx-auto mt-10 w-3/4 lg:w-full md:w-full">
+        <p class="text-gray-500 mt-2">میزان حجم مصرفی شما</p>
+        <p class="mt-5">
             {{ $user['traffic'] }} مگابایت
         </p>
         <p class="mt-2">از</p>
@@ -37,13 +38,7 @@
         </p>
 
     </div>
-    <a href="{{ route('logout') }}">
-        <button
-            class="p-6 mt-10 bg-customBlue rounded-full text-white py-2  transition duration-200"
-            type="submit">
-            خروج
-        </button>
-    </a>
+</div>
 </div>
 </body>
 

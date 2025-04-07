@@ -32,15 +32,15 @@ final class StatusTicketEnum extends Enum
     protected static function labels(): array
     {
         return [
-            'Pending' => __('enums.status_ticket.Pending'),
-            'Closed' => __('enums.status_ticket.Closed'),
-            'Answered' => __('enums.status_ticket.Answered'),
+            'Pending' => 'منتظر پاسخ',
+            'Closed' => 'بسته شده',
+            'Answered' => 'جواب داده شده',
             'Pending_background_color' => '#FEEEDF',
-            'Pending_text_color' => '#7D4400',
-            'Closed_text_color' => '#31684E',
+            'Pending_text_color' => 'text-pending',
+            'Closed_text_color' => 'text-closed',
             'Closed_background_color' => '#E4F2EE',
             'Answered_background_color' => '#EBF0FE',
-            'Answered_text_color' => '#1551A0',
+            'Answered_text_color' => 'text-answered',
         ];
     }
 }

@@ -14,10 +14,10 @@ class NetworkLog extends BaseModel
         "mac_address",
         "download_bytes",
         "upload_bytes",
-        "logged_at"
+        "finished_at"
     ];
 
     protected $casts = [
-        "logged_at" => "datetime",
+        "finished_at" => "datetime",
     ];
 }

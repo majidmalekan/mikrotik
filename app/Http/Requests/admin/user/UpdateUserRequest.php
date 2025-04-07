@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\admin\user;
 
+use App\Enums\UserRoleEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -28,6 +30,7 @@ class UpdateUserRequest extends FormRequest
             'email' => ['sometimes', 'string', 'email',Rule::unique('users','email')->ignore($this->route()->parameter('id'))],
             "status"=>['sometimes','string',Rule::in('active','disable')],
             'is_vip' => ['sometimes', 'boolean'],
+            "role" => ['sometimes', 'string', new EnumRule(UserRoleEnum::class)],
         ];
     }
 }

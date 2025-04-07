@@ -118,4 +118,18 @@ class User extends BaseModel implements AuthorizableContract, AuthenticatableCon
     {
         return 'remember_token';
     }
+
+    public function toArray(): array
+    {
+        $attributes = $this->attributesToArray();
+        $attributes = array_merge($attributes, $this->relationsToArray());
+
+        if (empty($attributes['children'])) {
+            unset($attributes['children']);
+        }
+
+        unset($attributes['pivot']);
+
+        return $attributes;
+    }
 }

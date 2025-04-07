@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests\admin\user;
 
+use App\Enums\UserRoleEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\RequiredIf;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class StoreUserRequest extends FormRequest
 {
@@ -28,7 +31,9 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string'],
             'email' => ['required', 'string', 'email'],
             'is_vip' => ['required', 'boolean'],
-            'traffic_limit'=>[new RequiredIf(!$this->input('is_vip')),]
+            "status"=>['required','string',Rule::in('active','disable')],
+            "role" => ['required', 'string', new EnumRule(UserRoleEnum::class)],
+            'traffic_limit' => [new RequiredIf(!$this->input('is_vip')),]
         ];
     }
 }

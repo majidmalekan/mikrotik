@@ -17,7 +17,7 @@ Route::post('/otp', [AuthController::class, 'otp'])->name('otp');
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [AuthController::class, 'dashboard'])->name('user-dashboard');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::resource('ticket', ApiTicketController::class);
+    Route::resource('tickets', ApiTicketController::class);
 });
 
 Route::prefix('admin')->group(function () {
