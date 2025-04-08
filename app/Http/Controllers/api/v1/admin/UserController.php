@@ -45,6 +45,8 @@ class UserController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @param StoreUserRequest $request
+     * @return RedirectResponse
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
@@ -64,6 +66,8 @@ class UserController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * @param string $id
+     * @return View|Factory|Application
      */
     public function edit(string $id): View|Factory|Application
     {

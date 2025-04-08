@@ -2,7 +2,7 @@
 @extends('Layouts.app')
 @section('content')
     <main class="flex-1 p-6 bg-white">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">ویرایش تیکت</h2>
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">ایجاد تیکت</h2>
         <div class="shadow-md rounded px-8 pt-6 pb-8 w-full">
             @if ( $errors->any())
                 <div class="fixed top-5 right-5 space-y-2">
@@ -15,13 +15,13 @@
                     @endforeach
                 </div>
             @endif
-            <form method="POST" action="{{ route('update-ticket', $ticket?->id) }}">
+            <form method="POST" action="{{ route('index-ticket') }}">
                 @csrf
                 <!-- Name Field -->
                 <div class="flex w-full">
                     <div class="w-1/2">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="title">عنوان تیکت</label>
-                        <input type="text" name="title" id="title" value="{{ old('title', $ticket->title) }}"
+                        <input type="text" name="title" id="title"
                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm md:w-1/2 lg:w-1/2"
                                required>
                     </div>
@@ -33,7 +33,7 @@
                                 required>
                                 @foreach ( DepartmentTicketEnum::toArray() as $department)
                                     <option
-                                        value="{{ $department["value"] }}" {{ $ticket->department==$department["value"] ? 'selected' : '' }}>{{ $department["label"] }}</option>
+                                        value="{{ $department["value"] }}" selected>{{ $department["label"] }}</option>
                                 @endforeach
                             </select>
                         </label>
@@ -51,7 +51,7 @@
                                 required>
                                 @foreach ( PriorityTicketEnum::toArray() as $priority)
                                     <option
-                                        value="{{ $priority["value"] }}" {{ $ticket->priority==$priority["value"] ? 'selected' : '' }}>{{ $priority["label"] }}</option>
+                                        value="{{ $priority["value"] }}" selected>{{ $priority["label"] }}</option>
                                 @endforeach
                             </select>
                         </label>
@@ -67,7 +67,6 @@
                                border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500
                                 focus:border-indigo-500 sm:text-sm md:w-1/2 lg:w-1/2"
                         >
-                        {{ old('description', $ticket->description) }}
                     </textarea>
                     </div>
                 </div>

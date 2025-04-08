@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Otp\VerifyOtpRequest;
 use App\Notifications\SendSmsNotification;
+use App\Service\FaqService;
 use App\Service\MikrotikService;
 use App\Service\UserService;
 use Exception;
@@ -39,7 +40,7 @@ class AuthController extends Controller
      * @param UserService $user
      * @param MikrotikService $mikrotikService
      */
-    public function __construct(UserService $user, MikrotikService $mikrotikService)
+    public function __construct(UserService $user, MikrotikService $mikrotikService,protected FaqService $faqService)
     {
         $this->service = $user;
         $this->mikrotikService = $mikrotikService;
@@ -134,7 +135,8 @@ class AuthController extends Controller
     {
         try {
             $user = $this->service->show($request->user()->id);
-            return view('Auth.dashboard', compact('user'));
+            $faqs=$this->service->index($request);
+            return view('Auth.dashboard', compact('user','faqs'));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

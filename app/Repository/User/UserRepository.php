@@ -97,4 +97,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             ->where('role', '=', UserRoleEnum::Admin()->value)
             ->first()?->phone;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAllSupervisorUser(): mixed
+    {
+        return $this->model->query()
+            ->where('role', '=', UserRoleEnum::Supervisor()->value)
+            ->get();
+    }
 }

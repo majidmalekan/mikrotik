@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جدول لیست سوالات متداول</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="bg-gray-100 flex justify-center min-h-screen">
-@include('Admin/Components.sidebar') <!-- Include the sidebar -->
+@extends('Layouts.app')
+@section('content')
 <main class="flex-1 p-6 bg-white">
     <div class="container mx-auto px-4">
 
@@ -76,35 +66,31 @@
         </div>
     </div>
 </div>
+@endsection
+@push('scripts')
+    <script>
+        // Show the modal and update its content
+        function showModal(action, faqId, actionText) {
+            const modal = document.getElementById('confirmation-modal');
+            const modalMessage = document.getElementById('modal-message');
+            const confirmAction = document.getElementById('confirm-action');
 
+            // Update modal message
+            modalMessage.textContent = `آیا مطمئن هستید که می‌خواهید ${actionText} این سوال را انجام دهید؟`;
 
-<script>
-    // Show the modal and update its content
-    function showModal(action, faqId, actionText) {
-        const modal = document.getElementById('confirmation-modal');
-        const modalMessage = document.getElementById('modal-message');
-        const confirmAction = document.getElementById('confirm-action');
+            // Update confirm button link
+            if (action === 'delete') {
+                confirmAction.href = `{{ route('delete-faq', ':id') }}`.replace(':id', faqId);
+            }
 
-        // Update modal message
-        modalMessage.textContent = `آیا مطمئن هستید که می‌خواهید ${actionText} این سوال را انجام دهید؟`;
-
-        // Update confirm button link
-        if (action === 'delete') {
-            confirmAction.href = `{{ route('delete-faq', ':id') }}`.replace(':id', faqId);
+            // Show the modal
+            modal.style.display = 'flex';
         }
 
-        // Show the modal
-        modal.style.display = 'flex';
-    }
-
-    // Close the modal
-    function closeModal() {
-        const modal = document.getElementById('confirmation-modal');
-        modal.style.display = 'none';
-    }
-</script>
-
-
-</body>
-
-</html>
+        // Close the modal
+        function closeModal() {
+            const modal = document.getElementById('confirmation-modal');
+            modal.style.display = 'none';
+        }
+    </script>
+@endpush

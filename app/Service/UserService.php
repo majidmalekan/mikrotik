@@ -63,4 +63,12 @@ class UserService extends BaseService
     {
         return $this->repository->getAllNormalUser();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAllSupervisorUser(): mixed
+    {
+        return $this->repository->getAllSupervisorUser();
+    }
 }

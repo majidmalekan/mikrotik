@@ -1,16 +1,6 @@
 @php use App\Enums\UserRoleEnum; @endphp
-    <!DOCTYPE html>
-<html lang="fa" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اضافه کردن کاربر</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="bg-gray-100 flex min-h-screen">
-@include('Admin/Components.sidebar') <!-- Include the sidebar -->
+@extends('Layouts.app')
+@section('content')
 <main class="flex-1 p-6 bg-white">
     <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">اضافه کردن کاربر</h2>
     <div class="shadow-md rounded px-8 pt-6 pb-8 w-full bg-gray-100">
@@ -114,6 +104,4 @@
         </form>
     </div>
 </main>
-</body>
-
-</html>
+@endsection
