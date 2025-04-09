@@ -1,39 +1,114 @@
-@php use App\Enums\DepartmentTicketEnum;use App\Enums\PriorityTicketEnum;use App\Enums\StatusTicketEnum; @endphp
-<div class="max-w-4xl mx-auto mt-10 bg-white p-6 rounded shadow">
-    <!-- Ticket Info -->
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-customBlue">{{ $ticket->title }}</h2>
-        <p class="text-sm text-gray-500 mt-1">وضعیت:
-            <span class="@php
-                echo match($ticket->status) {
-                    'pending' => 'text-ticketStatus-pending',
-                    'closed' => 'text-ticketStatus-closed',
-                    'answered' => 'text-ticketStatus-answered',
-                    default => 'text-gray-500'
-                };
-            @endphp font-semibold">
+@php use App\Enums\DepartmentTicketEnum;use App\Enums\PriorityTicketEnum;use App\Enums\StatusTicketEnum;use App\Enums\UserRoleEnum; @endphp
+@extends('layouts.app')
+
+@section('content')
+    <div class="max-w-4xl mx-auto mt-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+
+            <!-- عنوان -->
+            <div class="bg-white border rounded shadow p-4 flex flex-col items-start">
+                <span class="text-gray-500 mb-1">عنوان تیکت:</span>
+                <span class="font-semibold text-gray-800">{{ $ticket->title }}</span>
+            </div>
+
+            <!-- وضعیت -->
+            <div class="bg-white border rounded shadow p-4 flex flex-col items-start">
+                <span class="text-gray-500 mb-1">وضعیت:</span>
+                <span class="font-semibold
+                @php
+                    echo match($ticket->status) {
+                        'pending' => 'text-yellow-600',
+                        'closed' => 'text-red-600',
+                        'answered' => 'text-green-600',
+                        default => 'text-gray-600',
+                    };
+                @endphp">
                 {{ StatusTicketEnum::{ucfirst($ticket->status)}()->label }}
             </span>
-        </p>
-        <p class="mt-4 text-gray-700">{{ DepartmentTicketEnum::{ucfirst($ticket->department)}()->label }}</p>
-        <p class="mt-4 text-gray-700">{{ PriorityTicketEnum::{ucfirst($ticket->priority)}()->label }}</p>
-        <p class="mt-4 text-gray-700">{{ $ticket->description }}</p>
+            </div>
+
+            <!-- اولویت -->
+            <div class="bg-white border rounded shadow p-4 flex flex-col items-start">
+                <span class="text-gray-500 mb-1">اولویت تیکت:</span>
+                <span class="font-semibold text-red-700">
+                {{ PriorityTicketEnum::{ucfirst($ticket->priority)}()->label }}
+            </span>
+            </div>
+
+            <!-- دپارتمان -->
+            <div class="bg-white border rounded shadow p-4 flex flex-col items-start">
+                <span class="text-gray-500 mb-1">دپارتمان:</span>
+                <span class="font-semibold text-yellow-700">
+                {{ DepartmentTicketEnum::{ucfirst($ticket->department)}()->label }}
+            </span>
+            </div>
+
+        </div>
     </div>
 
-    <!-- Answers Section -->
-    <h3 class="text-xl font-semibold mb-4 border-b pb-2">پاسخ‌ها</h3>
+    <div class="max-w-3xl mx-auto my-5 p-6 bg-white rounded shadow">
 
-    @forelse ( $ticket->children as $answer)
-        <div class="mb-6 border rounded p-4 bg-gray-50">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm text-gray-700 font-medium">{{ $answer->user_name ?? 'پشتیبانی' }}</span>
-                <span class="text-sm text-gray-500">{{ jdate($answer->created_at)->format('Y/m/d H:i') }}</span>
-            </div>
-            <div class="text-gray-800 leading-relaxed">
-                {!! nl2br(e($answer->description)) !!}
-            </div>
+        <h1 class="text-xl font-bold mb-4">پاسخ‌های تیکت</h1>
+
+        {{-- Render the full thread --}}
+        <x-ticket-thread :ticket=" $ticket "/>
+
+        {{-- Only allow reply to the last child --}}
+        @php
+            function getLastChild($ticket) {
+                return $ticket->children->isEmpty() ? $ticket : getLastChild($ticket->children->last());
+            }
+            $lastTicket = getLastChild($ticket);
+        @endphp
+        @if($ticket->status!=StatusTicketEnum::Closed()->value)
+
+        <div class="mt-8 border-t pt-4">
+            <form method="POST" action="{{ route('tickets.store') }}">
+                @csrf
+                <label for="description" class="block mb-2 text-sm font-medium text-gray-700">پاسخ جدید</label>
+                <textarea name="description" id="description" rows="10"
+                          class="w-full p-3 border rounded" placeholder="متن خود را بنویسید..." required></textarea>
+                <input value="{{ $lastTicket->id }}" name="parent_id" hidden>
+                <input value="{{ $ticket->id }}" name="root_id" hidden>
+                <input value="{{ $lastTicket->priority }}" name="priority" hidden>
+                <input value="{{ $lastTicket->department }}" name="department" hidden>
+                <input value="{{ $lastTicket->title }}" name="title" hidden>
+                <input
+                    value="{{auth()->user()->role==UserRoleEnum::User()->value? StatusTicketEnum::Pending()->value :StatusTicketEnum::Answered()->value }}"
+                    name="title" hidden>
+                <button type="submit"
+                        class="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    ارسال پاسخ
+                </button>
+            </form>
         </div>
-    @empty
-        <p class="text-gray-500">هنوز پاسخی برای این تیکت ثبت نشده است.</p>
-    @endforelse
-</div>
+        @endif
+    @if( auth()->user()?->role==UserRoleEnum::User()->value && $ticket->status!=StatusTicketEnum::Closed()->value)
+            <div class="mt-8 border-t pt-4">
+                <form method="POST" action="{{ route('tickets.close') }}">
+                    @csrf
+                    <input
+                        value="{{ StatusTicketEnum::Closed()->value }}"
+                        name="title" hidden>
+                    <input value="{{ $ticket->id }}" name="root_id" hidden>
+                    <button type="submit"
+                            class="mt-3 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                        بستن تیکت
+                    </button>
+                </form>
+            </div>
+        @endif
+
+    </div>
+@endsection
+@push('scripts')
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#description'), {
+                language: 'fa'
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+@endpush

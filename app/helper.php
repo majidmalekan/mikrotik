@@ -80,6 +80,17 @@ if (!function_exists('convertPersianDateToLatin')) {
             ->format('Y-m-d');
     }
 }
+
+if (!function_exists('convertLatinDateToPersian')) {
+    /**
+     * @param string $date
+     * @return string
+     */
+    function convertLatinDateToPersian(string $date): string
+    {
+        return CalendarUtils::strftime('Y-m-d', strtotime($date));
+    }
+}
 if (!function_exists('ipInRange')) {
     /**
      * @param string $ip

@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [AuthController::class, 'dashboard'])->name('user-dashboard');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::resource('tickets', ApiTicketController::class);
+    Route::post('close-ticket', [ApiTicketController::class,'closeTicket'])->name('tickets.close');
 });
 
 Route::prefix('admin')->group(function () {

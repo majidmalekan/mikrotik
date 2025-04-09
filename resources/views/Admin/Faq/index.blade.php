@@ -2,8 +2,7 @@
 @section('content')
 <main class="flex-1 p-6 bg-white">
     <div class="container mx-auto px-4">
-
-        <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">لیست سوالات</h2>
+        <h2 class="text-2xl  mb-6 text-customBlue">لیست سوالات</h2>
         <a href="{{ route('create-faq') }}">
             <button
                 class="p-6 mt-5 bg-customBlue text-white py-2 rounded transition duration-200">

@@ -4,6 +4,12 @@
 <main class="flex-1 p-6 bg-white">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">لیست تیکت ها</h2>
+        <a href="{{ route('tickets.create') }}">
+            <button
+                class="p-6 mt-5 bg-customBlue text-white py-2 rounded transition duration-200">
+                ایجاد تیکت
+            </button>
+        </a>
         <div class="overflow-x-auto mt-5">
             <table class="min-w-full bg-white rounded-lg shadow-md">
                 <thead>
@@ -29,6 +35,11 @@
                             <a href="{{ route('tickets.edit', $ticket?->id) }}">
                                 <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
                                     ویرایش
+                                </button>
+                            </a>
+                            <a href="{{ route('tickets.show', $ticket?->id) }}">
+                                <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
+                                    نمایش
                                 </button>
                             </a>
                         </td>

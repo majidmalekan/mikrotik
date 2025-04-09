@@ -74,7 +74,7 @@
                     <button
                         class="p-6 mt-5 bg-customBlue text-white py-2 rounded transition duration-200"
                         type="submit">
-                        اعمال تغییرات
+                        ایجاد تیکت
                     </button>
                 </div>
             </form>

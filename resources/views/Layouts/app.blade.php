@@ -10,18 +10,21 @@
     @stack('styles')
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 </head>
-
-<body class="bg-white flex flex-col  justify-center min-h-screen font-IRANSans ">
 @if( auth()->user() && auth()->user()->role==UserRoleEnum::User()->value)
+    <body class="bg-white flex flex-col  justify-center min-h-screen font-IRANSans ">
     @include('Components.header')
 @endif
 @if( auth()->user() && in_array(auth()->user()?->role, [UserRoleEnum::Admin()->value, UserRoleEnum::Supervisor()->value]))
+    <body class="bg-gray-100 flex justify-center min-h-screen">
     @include('Admin.Components.sidebar')
 @endif
-<main class="flex-grow">
+<main class="flex-grow bg-white">
     @yield('content')
 </main>
-@include('Components.footer')
-@stack('scripts')
+    @if( auth()->user() && auth()->user()->role==UserRoleEnum::User()->value)
+        @include('Components.footer')
+    @endif
+
+    @stack('scripts')
 </body>
 </html>

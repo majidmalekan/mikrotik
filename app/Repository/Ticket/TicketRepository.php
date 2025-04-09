@@ -2,6 +2,7 @@
 
 namespace App\Repository\Ticket;
 
+use App\Enums\UserRoleEnum;
 use App\Models\Ticket;
 use App\Repository\BaseRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -26,7 +27,7 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
     {
         return $this->model
             ->query()
-            ->when(!$request->user()->is_admin, function (Builder $builder) use ($request) {
+            ->when($request->user()->role==UserRoleEnum::User()->value, function (Builder $builder) use ($request) {
                 $builder->where('user_id_from', $request->user()->id);
             })
             ->orderByDesc('updated_at')
@@ -98,7 +99,7 @@ class TicketRepository extends BaseRepository implements TicketRepositoryInterfa
     {
         return $this->model->query()
             ->where('user_id_to', $request->user()->id)
-            ->when($request->user()->is_admin, function ($query) use ($request) {
+            ->when($request->user()->role==UserRoleEnum::Admin()->value, function ($query) use ($request) {
                 $query->orWhere('user_id_to', null);
             })
             ->when($whereAttributes != null, function ($query) use ($whereAttributes) {

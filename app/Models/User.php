@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRoleEnum;
 use App\Service\MikrotikService;
 use App\Traits\MustVerifyContact;
 use Exception as ExceptionAlias;
@@ -16,7 +17,8 @@ use Kalnoy\Nestedset\NodeTrait;
 
 class User extends BaseModel implements AuthorizableContract, AuthenticatableContract
 {
-    use HasFactory, Notifiable, Authorizable, Authenticatable, MustVerifyContact,NodeTrait;
+    use HasFactory, Notifiable, Authorizable, Authenticatable, MustVerifyContact, NodeTrait;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -88,10 +90,17 @@ class User extends BaseModel implements AuthorizableContract, AuthenticatableCon
     public function getTrafficAttribute(): float|int
     {
         try {
+            $sumTraffic = 0;
+            if (in_array($this->role, [UserRoleEnum::Supervisor()->value, UserRoleEnum::Admin()->value])) {
+                foreach ($this->children()->get() as $child) {
+                    $sumTraffic += $child->traffic;
+                }
+            }
             $traffic = app()
                 ->make(MikrotikService::class)
                 ->getUserTraffic($this->phone);
-            return $traffic != null ? round($traffic['bytes'] / 1024 / 1024, 2) : 0;
+            $traffic != null ? $sumTraffic += round($traffic['bytes'] / 1024 / 1024, 2) : $sumTraffic += 0;
+            return $sumTraffic;
         } catch (ExceptionAlias $e) {
             throw new ExceptionAlias($e->getMessage());
         }

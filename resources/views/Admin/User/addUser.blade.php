@@ -2,8 +2,8 @@
 @extends('Layouts.app')
 @section('content')
 <main class="flex-1 p-6 bg-white">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">اضافه کردن کاربر</h2>
-    <div class="shadow-md rounded px-8 pt-6 pb-8 w-full bg-gray-100">
+    <h2 class="text-2xl  mb-6 text-customBlue">اضافه کردن کاربر</h2>
+    <div class="shadow-md rounded px-8 pt-6 pb-8 w-full bg-white-100">
         @if ($errors->any())
             <div class="fixed top-5 right-5 space-y-2">
                 @foreach ($errors->all() as $error)

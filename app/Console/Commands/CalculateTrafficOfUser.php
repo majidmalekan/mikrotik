@@ -14,7 +14,8 @@ use Illuminate\Notifications\Notifiable;
 
 class CalculateTrafficOfUser extends Command
 {
-    use Notifiable,MustVerifyContact;
+    use Notifiable, MustVerifyContact;
+
     protected MikrotikService $service;
     protected UserService $userService;
 
@@ -43,10 +44,11 @@ class CalculateTrafficOfUser extends Command
      * Execute the console command.
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         try {
-
+            $this->trafficUsageForSupervisorUser();
+            $this->trafficUsageForNormalUser();
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -59,53 +61,34 @@ class CalculateTrafficOfUser extends Command
      */
     protected function trafficUsageForNormalUser(): void
     {
-        $users=$this->userService->getAllNormalUser();
+        $users = $this->userService->getAllNormalUser();
         foreach ($users as $user) {
-            $traffic = $this->calculateTraffic($user->phone);
-            $this->blockTraffic($user,$traffic);
-        }
-    }
-
-    protected function trafficUsageForSupervisorUser()
-    {
-        $users=$this->userService->getAllSupervisorUser();
-        $allTraffic=0;
-        foreach ($users as $user) {
-            foreach ($user->children as $userChild) {
-                $traffic = $this->calculateTraffic($userChild->phone);
-                $allTraffic+=$traffic;
-                if ((($traffic['bytes'] / 1024) / 1024) > $userChild->traffic_limit && !$userChild->is_vip) {
-                    $this->service->blockUserAccess('disable', $userChild->phone);
-                    $this->notify(new SendSmsNotification(2,$this->getAdminPhoneNumber()));
-                }
-            }
-            $traffic = $this->calculateTraffic($user->phone);
-            $allTraffic+=(($traffic['bytes'] / 1024) / 1024);
+            $this->blockTraffic($user);
         }
     }
 
     /**
-     * @param $user
-     * @return float|int
      * @throws Exception
      */
-    protected function calculateTraffic($user): float|int
+    protected function trafficUsageForSupervisorUser(): void
     {
-         $traffic=$this->service->getUserTraffic($user->phone);
-         return (($traffic['bytes'] / 1024) / 1024);
+        $users = $this->userService->getAllSupervisorUser();
+        foreach ($users as $user) {
+            $this->blockTraffic($user);
+            $this->notify(new SendSmsNotification(2, $user->phone));
+        }
     }
 
     /**
      * @param $user
-     * @param $traffic
      * @return void
      * @throws Exception
      */
-    protected function blockTraffic($user, $traffic): void
+    protected function blockTraffic($user): void
     {
-        if ($traffic > $user->traffic_limit && !$user->is_vip) {
+        if ($user->traffic > $user->traffic_limit && !$user->is_vip) {
             $this->service->blockUserAccess('disable', $user->phone);
-            $this->notify(new SendSmsNotification(2,$this->getAdminPhoneNumber()));
+            $this->notify(new SendSmsNotification(2, $user->phone));
         }
     }
 }

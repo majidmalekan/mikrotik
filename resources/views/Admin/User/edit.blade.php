@@ -1,7 +1,7 @@
 @extends('Layouts.app')
 @section('content')
 <main class="flex-1 p-6 bg-white">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">ویرایش کاربر</h2>
+    <h2 class="text-2xl  mb-6 text-customBlue">ویرایش کاربر</h2>
     <div class="shadow-md rounded px-8 pt-6 pb-8 w-full">
         @if ( $errors->any())
             <div class="fixed top-5 right-5 space-y-2">
@@ -91,7 +91,7 @@
                             name="role"
                             class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm md:w-1/2 lg:w-1/2"
                             required>
-                            @foreach ( UserRoleEnum::toArray() as $role)
+                            @foreach ( \App\Enums\UserRoleEnum::toArray() as $role)
                                 <option
                                     value="{{ $role["value"] }}" {{ $user->role == $role["value"] ? 'selected' : '' }}>{{ $role["label"] }}</option>
                             @endforeach

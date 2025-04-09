@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Morilog\Jalali\Jalalian;
 
 class NetworkLog extends BaseModel
 {
@@ -20,4 +22,13 @@ class NetworkLog extends BaseModel
     protected $casts = [
         "finished_at" => "datetime",
     ];
+
+    /**
+     * @param $finishedAt
+     * @return string|null
+     */
+    public function getFinishedAtAttribute($finishedAt): ?string
+    {
+        return $finishedAt != null ? convertLatinDateToPersian($finishedAt) : null;
+    }
 }

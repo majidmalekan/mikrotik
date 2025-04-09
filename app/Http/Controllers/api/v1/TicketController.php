@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Enums\StatusTicketEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Ticket\CloseTicketStatus;
 use App\Http\Requests\Ticket\UpdateTicketRequest;
 use App\Http\Requests\Ticket\StoreTicketRequest;
 use App\Notifications\SendSmsNotification;
@@ -18,7 +19,8 @@ use Illuminate\Notifications\Notifiable;
 
 class TicketController extends Controller
 {
-    use Notifiable,MustVerifyContact;
+    use Notifiable, MustVerifyContact;
+
     public function __construct(protected TicketService $ticketService)
     {
     }
@@ -48,21 +50,22 @@ class TicketController extends Controller
     public function store(StoreTicketRequest $request): RedirectResponse
     {
         try {
+            $inputs = $request->only(['title', 'description', 'priority', 'department']);
+            if ($request->has('root_id')) {
+                $this->ticketService->update($request->post('root_id'), ['status' => $request->post('status')]);
+            }
             if ($request->has('parent_id')) {
                 $parentTicket = $this->ticketService->find($request->post('parent_id'));
-                $inputs['parent_id'] = $request->post('parent_id');
                 $inputs["user_id_to"] = ($parentTicket->user_id_from === auth()->user()->id ? $parentTicket->user_id_to : $parentTicket->user_id_from);
-                $inputs["department"] = $parentTicket->department;
-                $inputs["title"] = $parentTicket->title;
-                $inputs['priority'] = $parentTicket->priority;
-            } else {
-                $inputs = $request->only(['title', 'description', 'priority', 'department']);
+                $inputs["parent_id"]=$request->post('parent_id');
+            }else{
+                $inputs["user_id_to"] =  auth()->user()->parent_id;
             }
             $inputs["user_id_from"] = auth()->user()->id;
             $inputs["status"] = StatusTicketEnum::Pending()->value;
             $this->ticketService->create($inputs);
-            $this->notify(new SendSmsNotification(3,$this->getAdminPhoneNumber()));
-            $this->notify(new SendSmsNotification(4,auth()->user()->phone));
+            $this->notify(new SendSmsNotification(3, $this->getAdminPhoneNumber()));
+            $this->notify(new SendSmsNotification(4, auth()->user()->phone));
             return redirect()
                 ->route('index-ticket-user')
                 ->with('success', 'تیکت با موفقیت اضافه شد.');
@@ -111,5 +114,15 @@ class TicketController extends Controller
         return redirect()
             ->route('show-ticket-user')
             ->with('success', 'تیکت با موفقیت اضافه شد.');
+    }
+
+    /**
+     * @param CloseTicketStatus $request
+     * @return Factory|View|Application
+     */
+    public function closeTicket(CloseTicketStatus $request): Factory|View|Application
+    {
+        $this->ticketService->update($request->post('root_id'),[$request->post('status')]);
+       return $this->index($request);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Enums\UserRoleEnum;
 use App\Traits\DBTransactionLockedTrait;
 use App\Traits\TableInformationTrait;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -89,7 +90,7 @@ class BaseRepository implements BaseEloquentRepositoryInterface
     {
                 return $this->model->query()
                     ->when($request->user(), function ($query) use ($request) {
-                        $query->when(!$request->user()->is_admin, function ($query) use ($request) {
+                        $query->when($request->user()->role==UserRoleEnum::User()->value, function ($query) use ($request) {
                             $query->where('user_id', $request->user()->id);
                         });
                     })
@@ -129,7 +130,7 @@ class BaseRepository implements BaseEloquentRepositoryInterface
     {
             return $this->model->query()
                 ->when(auth()->check(), function ($query) {
-                    $query->when(!request()->user()->is_admin, function ($query) {
+                    $query->when(request()->user()->role==UserRoleEnum::User()->value, function ($query) {
                         $query->where('user_id', request()->user()->id);
                     });
                 })

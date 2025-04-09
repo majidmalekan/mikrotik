@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\api\v1\admin;
 
+use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\admin\auth\LoginAdminRequest;
+use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -41,7 +43,7 @@ class AuthController extends Controller
     {
         try {
             $inputs = $request->only(['username', 'password']);
-            $inputs["is_admin"] = true;
+            $inputs["role"] = UserRoleEnum::Admin()->value;
             if (Auth::attempt($inputs))
                 return redirect()->intended('admin/dashboard');
         } catch (Exception $exception) {
