@@ -135,7 +135,7 @@ class AuthController extends Controller
     {
         try {
             $user = $this->service->show($request->user()->id);
-            $faqs=$this->service->index($request);
+            $faqs=$this->faqService->getAll();
             return view('Auth.dashboard', compact('user','faqs'));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());

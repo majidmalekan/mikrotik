@@ -9,6 +9,8 @@
     <script src="//unpkg.com/alpinejs" defer></script>
     @stack('styles')
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 @if( auth()->user() && auth()->user()->role==UserRoleEnum::User()->value)
     <body class="bg-white flex flex-col  justify-center min-h-screen font-IRANSans ">

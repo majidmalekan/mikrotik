@@ -29,9 +29,9 @@
         </div>
     </div>
     <hr>
-    <div class="bg-white shadow-custom rounded-lg p-5 max-w-sm mx-auto mt-32 w-3/4 lg:w-full md:w-full">
+    <div class="bg-white shadow-lg rounded-lg p-5 mt-8 w-full">
         <h2 class="text-lg font-bold text-customBlue mb-4">سوالات متداول</h2>
-        @forelse ( $faqs as $faq)
+        @forelse ($faqs as $faq)
             <div x-data="{ open: false }" class="border-b border-gray-200 py-2">
                 <button @click="open = !open"
                         class="w-full text-right font-semibold text-gray-800 hover:text-customBlue focus:outline-none flex justify-between items-center">
