@@ -1,0 +1,78 @@
+{
+    "A45E60": {
+        "vendor": "Apple, Inc.",
+        "device": "iPhone"
+    },
+    "F01898": {
+        "vendor": "Apple, Inc.",
+        "device": "MacBook"
+    },
+    "88E9FE": {
+        "vendor": "Apple, Inc.",
+        "device": "iPad"
+    },
+    "ACBC32": {
+        "vendor": "Apple, Inc.",
+        "device": "AirPods"
+    },
+    "D8CB8A": {
+        "vendor": "Samsung Electronics",
+        "device": "Android Phone"
+    },
+    "001A11": {
+        "vendor": "Dell Inc.",
+        "device": "Laptop"
+    },
+    "3C5A37": {
+        "vendor": "HP Inc.",
+        "device": "Laptop"
+    },
+    "FC3FDB": {
+        "vendor": "Huawei Technologies Co.,Ltd",
+        "device": "Phone"
+    },
+    "B827EB": {
+        "vendor": "Raspberry Pi Foundation",
+        "device": "Mini PC"
+    },
+    "5866BA": {
+        "vendor": "Xiaomi Communications Co Ltd",
+        "device": "Android Phone"
+    },
+    "7C6D62": {
+        "vendor": "TP-Link Technologies Co., Ltd.",
+        "device": "Router"
+    },
+    "D850E6": {
+        "vendor": "Google, Inc.",
+        "device": "Chromecast"
+    },
+    "00E04C": {
+        "vendor": "ASUSTek COMPUTER INC.",
+        "device": "Laptop"
+    },
+    "4C74BF": {
+        "vendor": "Lenovo Mobile Communication",
+        "device": "Android Phone"
+    },
+    "EC233D": {
+        "vendor": "Microsoft Corporation",
+        "device": "Surface"
+    },
+    "F4F5E8": {
+        "vendor": "Sony Corporation",
+        "device": "PlayStation"
+    },
+    "FCB0C4": {
+        "vendor": "LG Electronics",
+        "device": "Smart TV"
+    },
+    "503F56": {
+        "vendor": "Nokia",
+        "device": "Android Phone"
+    },
+    "B09122": {
+        "vendor": "Realtek Semiconductor",
+        "device": "IoT / Network Adapter"
+    }
+}

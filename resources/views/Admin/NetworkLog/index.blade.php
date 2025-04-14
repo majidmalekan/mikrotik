@@ -16,6 +16,8 @@
                         <th class="py-3 px-6 text-center">ردیف</th>
                         <th class="py-3 px-6 text-center">IP</th>
                         <th class="py-3 px-6 text-center">MAC</th>
+                        <th class="py-3 px-6 text-center">برند</th>
+                        <th class="py-3 px-6 text-center">دستگاه</th>
                         <th class="py-3 px-6 text-center">دانلود (MB)</th>
                         <th class="py-3 px-6 text-center">آپلود (MB)</th>
                         <th class="py-3 px-6 text-center">تاریخ ثبت</th>
@@ -25,10 +27,26 @@
                     <tbody class="text-gray-600 text-sm font-light">
                     @php $counter = 1; @endphp
                     @foreach ( $logs as $log)
+                        @php
+                            $info = detectDeviceByMac($log->mac_address);
+                        @endphp
                         <tr class="border-b border-gray-200 hover:bg-gray-100">
                             <td class="py-3 px-6 text-center whitespace-nowrap">{{ $counter }}</td>
                             <td class="py-3 px-6 text-center">{{ $log?->ip_address!=null?$log?->ip_address: "وارد نشده" }}</td>
                             <td class="py-3 px-6 text-center">{{ $log?->mac_address!=null?$log?->mac_address: "وارد نشده" }}</td>
+                            <td class="py-3 px-6 text-center">{{ $info["vendor"] }}</td>
+                            <td class="py-3 px-6 text-center">
+                                <span class="inline-block px-2 py-1 rounded-full text-xs font-bold
+                                   {{ match($info['device']) {
+                                    'iPhone' => 'bg-blue-100 text-blue-700',
+                                    'MacBook' => 'bg-gray-200 text-gray-800',
+                                    'Android Phone' => 'bg-green-100 text-green-700',
+                                    'Laptop' => 'bg-indigo-100 text-indigo-700',
+                                    'Router' => 'bg-yellow-100 text-yellow-700',
+                                    default => 'bg-gray-100 text-gray-500'} }}">
+                                    {{ $info['device'] }}
+                                </span>
+                            </td>
                             <td class="py-3 px-6 text-center">{{ round($log?->download_bytes / 1024 / 1024, 2) }}</td>
                             <td class="py-3 px-6 text-center">{{ round($log?->upload_bytes / 1024 / 1024, 2) }}</td>
                             <td class="py-3 px-6 text-center">{{  $log?->created_at }}</td>

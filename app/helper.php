@@ -97,7 +97,7 @@ if (!function_exists('ipInRange')) {
      * @param string $range
      * @return bool
      */
-    function ipInRange(string $ip,string $range): bool
+    function ipInRange(string $ip, string $range): bool
     {
         if (str_contains($range, '/')) {
             list($subnet, $bits) = explode('/', $range);
@@ -150,4 +150,21 @@ if (!function_exists('arabicToPersian')) {
         ];
         return str_replace(array_keys($characters), array_values($characters), $string);
     }
+}
+
+if (!function_exists('detectDeviceByMac')) {
+    function detectDeviceByMac(string $mac): array
+    {
+        $prefix = strtoupper(str_replace([':', '-'], '', substr($mac, 0, 8)));
+        $file = './mac-devices.json';
+
+        if (!file_exists($file)) {
+            return ['vendor' => 'Unknown', 'device' => 'Unknown'];
+        }
+
+        $data = json_decode(file_get_contents($file), true);
+
+        return $data[$prefix] ?? ['vendor' => 'Unknown', 'device' => 'Unknown'];
+    }
+
 }

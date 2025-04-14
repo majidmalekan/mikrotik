@@ -14,6 +14,7 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Routing\Redirector;
@@ -76,6 +77,21 @@ class AuthController extends Controller
             'phone' => 'شماره موبایل وارد شده معتبر نمی باشد',
         ]);
     }
+
+    /**
+     * @param LoginRequest $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function resend(LoginRequest $request): JsonResponse
+    {
+        $this->sendOtpVerification($request->post('phone'));
+        return response()->json([
+            'success' => true,
+            'expireIn' => env('OTP_EXPIRES_IN', 90)
+        ]);
+    }
+
 
     /**
      * @return View|Factory|Application

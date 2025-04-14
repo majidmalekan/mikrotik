@@ -13,6 +13,7 @@ Route::get('/login', [AuthController::class, 'create'])->name('login');
 Route::post('/login-verify', [AuthController::class, 'login'])->name('login-verify');
 Route::get('/otp-page', [AuthController::class, 'createOtp'])->name('otp-page');
 Route::post('/otp', [AuthController::class, 'otp'])->name('otp');
+Route::post('/otp/resend', [AuthController::class, 'resend'])->name('otp.resend');
 //Route::post('/create-admin', [AuthController::class, 'createAdmin'])->name('createAdmin');
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [AuthController::class, 'dashboard'])->name('user-dashboard');
